@@ -820,8 +820,8 @@ fun LauncherHomeScreen(
                             viewModel.showPinRecoveryDialog = false
                             onSuccess()
                         },
-                        onFailed = { err ->
-                            onError(err)
+                        onFailed = { _ ->
+                            onError(context.getString(R.string.recovery_err_invalid_otp))
                         }
                     )
                 }
@@ -842,7 +842,7 @@ fun ScreentimeStatusCard(
     val containerBg = if (isBypassed) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
     } else {
-        CinematicDarkSurface
+        MaterialTheme.colorScheme.surface
     }
 
     Row(
@@ -854,7 +854,7 @@ fun ScreentimeStatusCard(
             .background(containerBg)
             .border(
                 width = if (isPillFocused) 2.dp else 1.dp,
-                color = if (isPillFocused) Color.White else Color.Gray.copy(alpha = 0.2f),
+                color = if (isPillFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(27.dp)
             )
             .onFocusChanged { isPillFocused = it.isFocused }
@@ -880,7 +880,7 @@ fun ScreentimeStatusCard(
             Text(
                 text = if (isBypassed) stringResource(R.string.supervisor_mode) else stringResource(R.string.remaining_screentime),
                 style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.White.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -899,7 +899,7 @@ fun ScreentimeStatusCard(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
         }
@@ -910,7 +910,7 @@ fun ScreentimeStatusCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White.copy(alpha = 0.1f))
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                     .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(

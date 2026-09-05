@@ -752,11 +752,11 @@ fun SupervisionLogsTab(
             Column {
                 Text(
                     text = stringResource(R.string.logs_title),
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = Color.White)
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 )
                 Text(
                     text = stringResource(R.string.logs_desc),
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.6f)),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
@@ -765,13 +765,16 @@ fun SupervisionLogsTab(
             Button(
                 onClick = { viewModel.clearLaunchLogs() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else CinematicDarkSurface
+                    containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
                 ),
                 modifier = Modifier
                     .onFocusChanged { isClearFocused = it.isFocused }
-                    .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
             ) {
-                Text(text = stringResource(R.string.btn_clear_all_logs), color = Color.White)
+                Text(
+                    text = stringResource(R.string.btn_clear_all_logs),
+                    color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                )
             }
         }
 
