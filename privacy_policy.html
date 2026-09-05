@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Minimal TV Launcher</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #3b82f6;
+                --primary-dark: #60a5fa;
+                --text: #f1f5f9;
+                --text-muted: #94a3b8;
+                --bg: #0f172a;
+                --card-bg: #1e293b;
+                --border: #334155;
+            }
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .effective-date {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        p {
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        ul {
+            margin-bottom: 20px;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .badge {
+                background: #1e3a8a;
+                color: #bfdbfe;
+            }
+        }
+        footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">Family &amp; Privacy First</div>
+            <h1>Privacy Policy</h1>
+            <div class="effective-date"><strong>Application:</strong> Minimal TV Launcher</div>
+            <div class="effective-date"><strong>Effective Date:</strong> September 5, 2026</div>
+        </header>
+
+        <section>
+            <h2>1. Introduction &amp; Core Commitment</h2>
+            <p>
+                <strong>Minimal TV Launcher</strong> ("we", "our", or "the app") is designed specifically for Android TV and Google TV living room environments with family safety, distraction-free entertainment, and child wellness in mind. We believe privacy is a fundamental right. 
+            </p>
+            <p>
+                <strong>Our principle is simple:</strong> We do not collect, store, transmit, monetize, or sell any personal data, usage habits, device identifiers, or biometric information.
+            </p>
+        </section>
+
+        <section>
+            <h2>2. Information Collection and Storage</h2>
+            <p>
+                Minimal TV Launcher functions as an <strong>offline-first</strong> launcher application. All operational configurations remain exclusively on your local device:
+            </p>
+            <ul>
+                <li><strong>Application Catalog:</strong> The app queries the local Android package manager solely to display installed TV applications on your home screen. This list is processed locally and is never sent to external servers.</li>
+                <li><strong>Parental Controls &amp; Settings:</strong> Screen time limits, bedtime schedules, customized app categories, PIN protections, and local activity counters are saved locally in private device storage (Android DataStore / SharedPreferences).</li>
+                <li><strong>No Telemetry or Tracking:</strong> The app contains no third-party tracking SDKs, no behavioral telemetry, no crash reporting beacons with personal data, and no targeted advertising frameworks.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Children's Privacy (COPPA &amp; GDPR-K Compliance)</h2>
+            <p>
+                We strictly adhere to the Children's Online Privacy Protection Act (COPPA), GDPR Kids protection guidelines, and Google Play Families Policy:
+            </p>
+            <ul>
+                <li>We do not knowingly collect personal identifiable information from children of any age.</li>
+                <li>The launcher provides robust, PIN-protected screen time timers and bedtime restrictions to help parents supervise TV usage.</li>
+                <li>No online accounts or social media logins are required to use the launcher.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. Permissions Used</h2>
+            <p>Minimal TV Launcher requests only the standard system permissions necessary to function as a TV home launcher:</p>
+            <ul>
+                <li><code>QUERY_ALL_PACKAGES</code>: Required to index and display installed Android TV applications in categories (Streaming, Games, Education, Tools).</li>
+                <li><code>SYSTEM_ALERT_WINDOW</code>: Used solely to display the full-screen Bedtime Lock and Screen Time Limit notice when daily limits expire.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>5. Third-Party Links &amp; External Applications</h2>
+            <p>
+                Launching a third-party application (such as Netflix, YouTube, or educational games) transfers control to that respective application. Those third-party apps are governed by their own individual privacy policies and terms of service.
+            </p>
+        </section>
+
+        <section>
+            <h2>6. Security of Your Data</h2>
+            <p>
+                Parental PIN codes and supervisor configurations are encrypted and protected using standard Android security mechanisms within the application's isolated sandbox storage.
+            </p>
+        </section>
+
+        <section>
+            <h2>7. Changes to This Policy</h2>
+            <p>
+                If updates are made to this Privacy Policy, the revised document will be updated within the application and accompanying app repository with a revised effective date.
+            </p>
+        </section>
+
+        <section>
+            <h2>8. Contact Information</h2>
+            <p>
+                If you have questions, feedback, or suggestions regarding this Privacy Policy or the security of Minimal TV Launcher, please contact the development team at:
+            </p>
+            <p><strong>Email:</strong> <a href="mailto:support@minimaltvlauncher.app" style="color: var(--primary);">support@minimaltvlauncher.app</a></p>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Minimal TV Launcher. All rights reserved. Compliant with Google Play Store Policies.</p>
+        </footer>
+    </div>
+</body>
+</html>

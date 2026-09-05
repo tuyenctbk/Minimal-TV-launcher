@@ -1,0 +1,6 @@
+{
+  "name": "Minimal TV Launcher",
+  "description": "A minimalist, ad-free Android TV launcher featuring PIN-protected parental controls, screen time limits, bedtime hours, and activity monitoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

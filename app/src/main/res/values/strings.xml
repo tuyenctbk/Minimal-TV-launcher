@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">Minimal TV Launcher</string>
+
+    <!-- Top Status Bar -->
+    <string name="greeting_user">Hi, Leo</string>
+    <string name="profile_parent">Parent Profile</string>
+    <string name="profile_kid">Kid Profile</string>
+    <string name="status_online">Online</string>
+    <string name="switch_to_dark_mode">Switch to Dark Mode</string>
+    <string name="switch_to_light_mode">Switch to Light Mode</string>
+    <string name="parent_settings">Parent Settings</string>
+
+    <!-- Supervision & Screentime Status Card -->
+    <string name="supervisor_override_active">Parental Override Session Active</string>
+    <string name="supervision_active">Parental Supervision Active</string>
+    <string name="unlimited_session">Unlimited Session</string>
+    <string name="unlimited_play">Unlimited Play</string>
+    <string name="remaining_mins">%1$d mins left</string>
+    <string name="remaining_secs">%1$d secs left</string>
+    <string name="remaining_mins_short">%1$dm Remaining</string>
+    <string name="remaining_secs_short">%1$ds Remaining</string>
+    <string name="toast_added_screentime">Added +15 mins Screen Time!</string>
+    <string name="next_break_bedtime">Next Break: Bedtime at %1$02d:%2$02d</string>
+    <string name="managed_by_parental_dashboard">Managed by Parental Dashboard</string>
+    <string name="btn_ask_more_time">ASK MORE (+15M)</string>
+    <string name="supervisor_mode">Supervisor Mode</string>
+    <string name="remaining_screentime">Remaining Screentime</string>
+
+    <!-- Bedtime Warning Banner -->
+    <string name="bedtime_warning_title">Bedtime starts in %1$d minute%2$s!</string>
+    <string name="bedtime_warning_subtitle">Please finish up what you\'re doing. TV will rest soon.</string>
+    <string name="bedtime_warning_cd">Bedtime warning</string>
+
+    <!-- Search & Categories -->
+    <string name="search_apps_placeholder">Search apps...</string>
+    <string name="clear_search">Clear search</string>
+    <string name="category_all">All</string>
+    <string name="category_streaming">Streaming</string>
+    <string name="category_games">Games</string>
+    <string name="category_educational">Educational</string>
+    <string name="category_productivity">Productivity</string>
+    <string name="category_other">Other</string>
+
+    <!-- Section Headers & Empty States -->
+    <string name="your_favorites_parent">YOUR FAVORITES (PARENT MODE)</string>
+    <string name="your_favorites">YOUR FAVORITES</string>
+    <string name="unrestricted_session">Unrestricted Session</string>
+    <string name="no_apps_found_title">No apps found matching criteria.</string>
+    <string name="no_apps_found_desc">Try switching category filters or check App Guard in Parental Settings.</string>
+    <string name="app_blocked_badge">Blocked</string>
+    <string name="toast_could_not_open_app">Could not open %1$s</string>
+    <string name="toast_launch_failed">Launch failed: %1$s</string>
+
+    <!-- Fullscreen Lock Overlay -->
+    <string name="lock_bedtime_title">Time for Bed!</string>
+    <string name="lock_screentime_title">Screen Time Completed!</string>
+    <string name="lock_bedtime_desc">Bedtime supervision is active. Sleep well and stay refreshed!</string>
+    <string name="lock_screentime_desc">You have reached your screen time limit for today. Go play outside!</string>
+    <string name="btn_parental_override">Parental Override</string>
+
+    <!-- PIN Pad Dialog -->
+    <string name="pin_dialog_title_auth">Parent Authorization Required</string>
+    <string name="pin_dialog_title_default">Enter Parental PIN</string>
+    <string name="pin_key_clear">Clear</string>
+    <string name="pin_key_delete">Delete</string>
+    <string name="forgot_pin_btn">Forgot PIN? Reset via Email</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_close">Close</string>
+    <string name="toast_invalid_pin">Invalid PIN. Please try again.</string>
+
+    <!-- PIN Recovery Dialog -->
+    <string name="recovery_step_1_title">Reset Parental PIN</string>
+    <string name="recovery_step_2_title">Enter Recovery Code</string>
+    <string name="recovery_step_3_title">Set New 4-Digit PIN</string>
+    <string name="recovery_step_1_desc">To protect parental settings, a secure 6-digit one-time code will be dispatched to your registered address:\n\n%1$s</string>
+    <string name="recovery_btn_send_code">Send 6-Digit Recovery Code</string>
+    <string name="recovery_email_sent_to">Email Sent to %1$s</string>
+    <string name="recovery_simulated_code">Your Recovery Code: %1$s</string>
+    <string name="recovery_err_code_mismatch">Code does not match. Please verify.</string>
+    <string name="recovery_err_invalid_otp">Invalid or expired 6-digit recovery code. Please retry.</string>
+    <string name="recovery_step_3_prompt">Code verified successfully! Please enter your new 4-digit PIN.</string>
+    <string name="recovery_btn_reset">Reset</string>
+    <string name="recovery_btn_save">Save</string>
+    <string name="recovery_err_pin_length">PIN must be exactly 4 digits.</string>
+    <string name="toast_pin_reset_success">Parent PIN reset successfully! New PIN is active.</string>
+
+    <!-- Parental Settings Navigation -->
+    <string name="settings_header_title">TV Supervision</string>
+    <string name="tab_app_guard">App Guard</string>
+    <string name="tab_screentime">Screentime Limits</string>
+    <string name="tab_bedtime">Bedtime Schedule</string>
+    <string name="tab_theme">Display &amp; Theme</string>
+    <string name="tab_activity">Activity Monitoring</string>
+    <string name="tab_security">Security &amp; Recovery</string>
+    <string name="btn_exit_settings">Exit Parental Settings</string>
+
+    <!-- App Guard Tab -->
+    <string name="app_guard_title">Restrict &amp; Categorize Applications</string>
+    <string name="app_guard_desc">Organize apps by category and block games or distracting apps during study hours. Blocked apps require parental PIN to open.</string>
+    <string name="btn_unblock_all_games">Unblock All Games</string>
+    <string name="btn_block_all_games">Block All Games</string>
+    <string name="btn_allow_all_educational">Allow All Educational</string>
+
+    <!-- Screentime Limits Tab -->
+    <string name="screentime_title">Daily Screen Time Limits</string>
+    <string name="screentime_desc">Set a daily countdown timer. Once the time is exhausted, the launcher screen locks completely until parental override.</string>
+    <string name="screentime_current_limit">Current Daily Limit</string>
+    <string name="screentime_limit_minutes">%1$d Minutes</string>
+    <string name="screentime_unlimited_play">Unlimited Free Play</string>
+    <string name="screentime_select_duration">Select Screen Time Duration:</string>
+    <string name="screentime_no_limits">No Screen Limits (Unlimited)</string>
+
+    <!-- Bedtime Schedule Tab -->
+    <string name="bedtime_title">Bedtime Blackout Schedule</string>
+    <string name="bedtime_desc">Prevent app launches completely during sleep hours. Keeps kids from watching television late at night.</string>
+    <string name="bedtime_start_hour_label">Bedtime Start Hour</string>
+    <string name="bedtime_end_hour_label">Bedtime End Hour</string>
+    <string name="time_pm">%1$d PM</string>
+    <string name="time_am">%1$d AM</string>
+    <string name="time_pm_clock">%1$d:00 PM</string>
+    <string name="time_am_clock">%1$02d:00 AM</string>
+
+    <!-- Supervision Logs Tab -->
+    <string name="logs_title">Activity Supervision &amp; Usage Insights</string>
+    <string name="logs_desc">Observe screen time trends, most-launched apps, and chronological launch history.</string>
+    <string name="btn_clear_all_logs">Clear All Logs</string>
+    <string name="logs_card_today_screentime">TODAY\'S SCREEN TIME</string>
+    <string name="logs_stat_mins">%1$d mins</string>
+    <string name="logs_card_today_screentime_sub">Monitored active launcher session time</string>
+    <string name="logs_card_frequency_chart">LAUNCH FREQUENCY CHART</string>
+    <string name="logs_no_stats">No stats to display</string>
+    <string name="logs_launch_count">%1$d launch(es)</string>
+    <string name="logs_chronological_header">CHRONOLOGICAL LOGS</string>
+    <string name="logs_no_logs_yet">No launch activity logs recorded yet.</string>
+
+    <!-- Display & Theme Tab -->
+    <string name="theme_title">Living Room Display &amp; Theme</string>
+    <string name="theme_desc">Choose between Light and Dark mode to adjust contrast and comfort for your living room ambient lighting conditions.</string>
+    <string name="theme_dark_title">Dark Mode (Evening Cinema)</string>
+    <string name="theme_dark_desc">Deep zinc aesthetic engineered for evening television viewing. Eliminates harsh glare in dim living rooms.</string>
+    <string name="theme_light_title">Light Mode (Bright Living Room)</string>
+    <string name="theme_light_desc">Bright high-contrast canvas tailored for sunlit living rooms and daytime family use across distance.</string>
+    <string name="selected_cd">Selected</string>
+
+    <!-- Security & PIN Management Tab -->
+    <string name="pin_mgmt_title">Security &amp; PIN Management</string>
+    <string name="pin_mgmt_desc">Set a secure 4-digit code to guard parental settings, bypass screentime limits, and unlock restricted apps.</string>
+    <string name="pin_current_protection">Current PIN Protection</string>
+    <string name="pin_enter_4_digits_change">Enter 4 Digits to Change PIN:</string>
+    <string name="pin_saved_success">Parental PIN saved successfully!</string>
+    <string name="recovery_mgmt_title">Secure PIN Recovery via Registered Email</string>
+    <string name="recovery_mgmt_desc">If you ever forget your parental control PIN, a secure 6-digit one-time passcode will be sent to your registered email address.</string>
+    <string name="recovery_registered_address_label">Registered Recovery Address</string>
+    <string name="btn_test_recovery_dispatch">Test Recovery Dispatch</string>
+    <string name="recovery_code_generated_valid">Verification code generated! Valid for 10 minutes.</string>
+    <string name="recovery_simulated_dispatch_title">Simulated Living Room Email Dispatch:</string>
+    <string name="recovery_simulated_code_label">6-Digit One-Time Code: %1$s (Expiry: 10 mins)</string>
+    <string name="recovery_simulated_help">You can enter this code in the \'Forgot PIN? Reset via Email\' recovery dialog to reset your parental PIN.</string>
+</resources>

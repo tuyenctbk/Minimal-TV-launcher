@@ -1,0 +1,111 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Subtle Ambient Glow behind TV -->
+    <path
+        android:pathData="M54,49m-28,0a28,28 0 1,1 56,0a28,28 0 1,1 -56,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="54"
+                android:centerY="49"
+                android:gradientRadius="28"
+                android:type="radial">
+                <item android:color="#40818CF8" android:offset="0.0" />
+                <item android:color="#00000000" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Stand Base Plate -->
+    <path
+        android:pathData="M40,73 h28 a2,2 0 0,1 2,2 v1 a2,2 0 0,1 -2,2 h-28 a2,2 0 0,1 -2,-2 v-1 a2,2 0 0,1 2,-2 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="40"
+                android:startY="73"
+                android:endX="70"
+                android:endY="78"
+                android:type="linear">
+                <item android:color="#818CF8" android:offset="0.0" />
+                <item android:color="#6366F1" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Stand Neck -->
+    <path
+        android:fillColor="#4F46E5"
+        android:pathData="M50,68 h8 v5 h-8 z" />
+
+    <!-- Outer TV Bezel with rounded corners -->
+    <path
+        android:pathData="M26,27 h56 a6,6 0 0,1 6,6 v36 a6,6 0 0,1 -6,6 h-56 a6,6 0 0,1 -6,-6 v-36 a6,6 0 0,1 6,-6 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="20"
+                android:startY="27"
+                android:endX="88"
+                android:endY="75"
+                android:type="linear">
+                <item android:color="#6366F1" android:offset="0.0" />
+                <item android:color="#4338CA" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Screen Inner Deep Glass Canvas -->
+    <path
+        android:fillColor="#090D16"
+        android:pathData="M29,30 h50 a3,3 0 0,1 3,3 v30 a3,3 0 0,1 -3,3 h-50 a3,3 0 0,1 -3,-3 v-30 a3,3 0 0,1 3,-3 z" />
+
+    <!-- Sleek Diagonal Screen Glare Effect -->
+    <path
+        android:fillColor="#12FFFFFF"
+        android:pathData="M32,30 L64,30 L48,63 L32,63 Z" />
+
+    <!-- Floating Shield: Guardian Symbol -->
+    <path
+        android:pathData="M54,34 C61.5,34 65,37.5 65,37.5 C65,49.5 57.5,56.5 54,59 C50.5,56.5 43,49.5 43,37.5 C43,37.5 46.5,34 54,34 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="43"
+                android:startY="34"
+                android:endX="65"
+                android:endY="59"
+                android:type="linear">
+                <item android:color="#38BDF8" android:offset="0.0" />
+                <item android:color="#6366F1" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Shield Inner Core Glow -->
+    <path
+        android:pathData="M54,37 C59,37 62,39.5 62,39.5 C62,47.5 56.5,52.5 54,54.5 C51.5,52.5 46,47.5 46,39.5 C46,39.5 49,37 54,37 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="46"
+                android:startY="37"
+                android:endX="62"
+                android:endY="54.5"
+                android:type="linear">
+                <item android:color="#0EA5E9" android:offset="0.0" />
+                <item android:color="#4F46E5" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Play/Star Arrow Glyph in the Shield -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52.5,41 L57.5,45 L52.5,49 Z" />
+
+    <!-- Status Indicator LED Dot on TV frame -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M54,71m-1,0a1,1 0 1,1 2,0a1,1 0 1,1 -2,0" />
+</vector>

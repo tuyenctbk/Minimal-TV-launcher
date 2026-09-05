@@ -1,0 +1,466 @@
+﻿"Locale","Language","App Name (max 30 chars)","Short Description (max 80 chars)","Full Description (max 4000 chars)"
+"en-US","English","Minimal TV Launcher & Control","Clean, distraction-free Android TV launcher with built-in parental controls.","Minimal TV Launcher provides a clean, distraction-free home screen experience designed specifically for Android TV and Google TV devices. Built for modern living rooms and families, it combines an intuitive, clutter-free app launcher with powerful parental control features.
+
+KEY FEATURES
+
+• Distraction-Free Home Screen: Focus on your favorite streaming, gaming, and educational apps without annoying ads, sponsored rows, or visual clutter.
+• Intelligent App Categorization: Easily organize your installed TV apps into Streaming, Games, Educational, Productivity, and Custom categories.
+• Daily Screen Time Limits: Set healthy daily TV time allowances for children. When time expires, a gentle full-screen lock guides kids toward off-screen activities.
+• Scheduled Bedtime Mode: Automatically lock app access during nighttime hours to encourage regular sleep routines.
+• Four-Digit Parental PIN: Secure parental dashboard, app locks, and screen time modifications behind a secure PIN code.
+• PIN Recovery Mechanism: Safely recover forgotten parental PINs via email verification.
+• Living Room Themes: Seamlessly switch between Night Cinema (Dark Theme) and Bright Living Room (Light Theme) for optimal viewing comfort.
+• Privacy and Family First: Completely offline-first architecture. No personal data collection, no behavioral tracking, and no third-party advertisements.
+• TV Remote Optimized: Fully compatible with standard D-pad directional controls and TV remote controllers.
+
+Take back control of your living room entertainment with Minimal TV Launcher."
+"es-ES","Spanish","Minimal TV Launcher y Control","Lanzador para Android TV limpio, rápido y con control parental integrado.","Minimal TV Launcher ofrece una pantalla de inicio limpia y sin distracciones, diseñada para Android TV y Google TV. Pensado para familias, combina un lanzador intuitivo con herramientas de control parental.
+
+CARACTERÍSTICAS PRINCIPALES
+
+• Inicio Sin Distracciones: Accede a tus apps de streaming, juegos y educación sin anuncios molestos ni filas patrocinadas.
+• Categorías Inteligentes: Organiza tus aplicaciones en Streaming, Juegos, Educativas y Productividad.
+• Límites de Tiempo de Pantalla: Establece límites diarios para los niños. Al terminar el tiempo, la pantalla se bloquea suavemente.
+• Modo Hora de Dormir: Bloquea automáticamente las apps por la noche para fomentar un descanso saludable.
+• PIN Parental de 4 Dígitos: Protege los ajustes y el desbloqueo de apps con un código PIN seguro.
+• Recuperación de PIN: Recupera tu código parental fácilmente mediante verificación por correo electrónico.
+• Temas para el Salón: Cambia entre Modo Oscuro (Cine Nocturno) y Modo Claro (Salón Iluminado).
+• Privacidad Total: Funciona sin conexión. Sin recopilación de datos personales ni rastreadores.
+• Optimizado para Mando a Distancia: Compatible con controles de cruceta (D-pad) y mandos de TV.
+
+Disfruta de una experiencia de televisión organizada y segura con Minimal TV Launcher."
+"fr-FR","French","Minimal TV Launcher & Contrôle","Lanceur Android TV épuré et sécurisé avec contrôle parental intégré.","Minimal TV Launcher offre un écran d'accueil épuré et sans distraction pour Android TV et Google TV. Idéal pour les familles, il combine une navigation fluide avec un contrôle parental complet.
+
+FONCTIONNALITÉS PRINCIPALES
+
+• Écran Sans Distraction : Accédez rapidement à vos applications de streaming et de jeux sans publicités intrusives.
+• Catégorisation Intelligente : Classez vos applications en Streaming, Jeux, Éducation et Outils.
+• Limites de Temps d'Écran : Définissez un temps quotidien pour vos enfants. L'écran se verrouille quand la limite est atteinte.
+• Mode Heure du Coucher : Bloquez l'accès aux applications la nuit pour préserver le sommeil.
+• Code PIN Parental à 4 Chiffres : Sécurisez les réglages et le déverrouillage grâce à un code secret.
+• Récupération du PIN : Réinitialisez facilement le code PIN par validation e-mail en cas d'oubli.
+• Thèmes de Salon : Basculez entre le Mode Sombre (Cinéma) et le Mode Clair (Salon Lumineux).
+• Respect de la Vie Privée : Fonctionnement hors ligne. Aucune collecte de données personnelles ni suivi publicitaire.
+• Optimisé Télécommande TV : Navigation fluide et naturelle avec les touches directionnelles (D-pad).
+
+Apportez simplicité et sérénité à votre téléviseur avec Minimal TV Launcher."
+"de-DE","German","Minimal TV Launcher & Schutz","Übersichtlicher Android TV Launcher mit integrierter Kindersicherung.","Minimal TV Launcher bietet einen aufgeräumten, ablenkungsfreien Startbildschirm für Android TV und Google TV. Entwickelt für Familien, vereint die App ein klares Design mit zuverlässiger Kindersicherung.
+
+HAUPTFUNKTIONEN
+
+• Ablenkungsfreier Startbildschirm: Schneller Zugriff auf Streaming-, Spiele- und Lern-Apps ohne Werbung oder gesponserte Inhalte.
+• Intelligente Kategorisierung: Ordnen Sie Apps übersichtlich nach Streaming, Spiele, Bildung und Werkzeuge.
+• Tägliche Bildschirmzeit-Limits: Legen Sie tägliche TV-Zeiten für Kinder fest. Bei Ablauf sperrt sich der Bildschirm automatisch.
+• Schlafenszeit-Modus: Blockiert App-Zugriffe in den Nachtstunden für erholsamen Schlaf.
+• 4-stellige Eltern-PIN: Schützt Systemeinstellungen und App-Freigaben sicher vor unbefugtem Zugriff.
+• PIN-Wiederherstellung: Einfaches Zurücksetzen der PIN per E-Mail-Sicherheitscode.
+• Wohnzimmer-Designs: Wechseln Sie flexibel zwischen Nachtkino (Dunkel) und Hellem Wohnzimmer (Hell).
+• Hohe Privatsphäre: Vollständig offline-fähig. Keine Datenerfassung, kein Tracking, keine Werbung.
+• Fernbedienungsoptimiert: Perfekte Steuerung mit D-Pad und Standard-TV-Fernbedienungen.
+
+Gestalten Sie Ihr Fernseherlebnis einfach, sicher und übersichtlich mit Minimal TV Launcher."
+"it-IT","Italian","Minimal TV Launcher & Control","Launcher Android TV pulito ed essenziale con controllo genitori integrato.","Minimal TV Launcher offre una schermata iniziale pulita e priva di distrazioni per Android TV e Google TV. Pensato per tutta la famiglia, unisce facilità d'uso e controllo genitori avanzato.
+
+CARATTERISTICHE PRINCIPALI
+
+• Schermata Pulita e Ordinata: Accedi a streaming, giochi e app educative senza annunci o righe sponsorizzate.
+• Categorie Intelligenti: Raggruppa le tue applicazioni in Streaming, Giochi, Istruzione e Strumenti.
+• Limiti di Tempo Giornalieri: Imposta un tempo massimo di visione per i bambini con blocco automatico.
+• Modalità Buonanotte: Blocca le applicazioni nelle ore notturne per favorire il riposo.
+• PIN Genitori a 4 Cifre: Proteggi le impostazioni e lo sblocco temporaneo con un codice di sicurezza.
+• Recupero PIN: Procedura semplice di reimpostazione del codice tramite verifica e-mail.
+• Temi Salotto: Scegli tra Modalità Scura (Cinema Notturno) e Modalità Chiara (Giorno).
+• Massima Privacy: Funzionamento locale e offline. Nessuna raccolta di dati personali o tracciamento.
+• Ottimizzato per Telecomando: Perfetta navigazione con i tasti direzionali D-pad del telecomando TV.
+
+Rendi la tua TV più ordinata e sicura per i tuoi figli con Minimal TV Launcher."
+"pt-PT","Portuguese","Minimal TV Launcher e Controlo","Iniciador Android TV limpo, rápido e com controlo parental integrado.","Minimal TV Launcher oferece um ecrã inicial limpo e sem distrações para Android TV e Google TV. Criado para famílias, combina organização visual com controlo parental avançado.
+
+PRINCIPAIS FUNCIONALIDADES
+
+• Ecrã Inicial Sem Distrações: Acesso direto aos seus serviços de streaming, jogos e educação sem anúncios ou recomendações forçadas.
+• Categorias Inteligentes: Organize aplicações em Streaming, Jogos, Educativas e Ferramentas.
+• Limites de Tempo de Ecrã: Defina tempos diários para crianças. O ecrã bloqueia suavemente quando o tempo termina.
+• Horário de Dormir: Restrinja o uso de aplicações à noite para incentivar rotinas de sono saudáveis.
+• PIN Parental de 4 Dígitos: Proteja as definições e o desbloqueio com um código de segurança.
+• Recuperação de PIN: Redefina facilmente o seu PIN através de verificação por e-mail.
+• Temas de Visualização: Alterne entre Modo Escuro (Cinema Noturno) e Modo Claro (Sala Iluminada).
+• Privacidade Total: Funcionamento totalmente local. Sem recolha de dados pessoais nem rastreadores.
+• Otimizado para Comando: Navegação precisa e intuitiva com o D-pad do comando da TV.
+
+Mantenha a sua televisão organizada e segura com o Minimal TV Launcher."
+"ru-RU","Russian","Minimal TV Лаунчер и Контроль","Лаконичный лаунчер для Android TV с родительским контролем и лимитами.","Minimal TV Launcher — это удобный и лаконичный главный экран для Android TV и Google TV. Приложение создано для семейного использования и объединяет чистый интерфейс с функциями родительского контроля.
+
+ОСНОВНЫЕ ВОЗМОЖНОСТИ
+
+• Чистый главный экран: Никакой рекламы и навязчивых рекомендаций. Только нужные приложения.
+• Удобные категории: Сортируйте приложения по разделам: Стриминг, Игры, Обучение и Инструменты.
+• Лимиты экранного времени: Устанавливайте дневной лимит для детей. При исчерпании времени экран блокируется.
+• Режим сна: Ограничение запуска приложений в ночные часы для поддержания режима сна.
+• Родительский 4-значный PIN: Защита настроек и разблокировки приложений надежным кодом.
+• Восстановление PIN: Возможность безопасного сброса кода через подтверждение по e-mail.
+• Темы оформления: Легкое переключение между Темной (Ночной кинозал) и Светлой (Яркая гостиная) темами.
+• Безопасность и конфиденциальность: Полностью автономная работа без сбора личных данных и трекеров.
+• Оптимизация для пульта: Удобное управление кнопками пульта телевизора (D-pad).
+
+Сделайте использование телевизора удобным и безопасным с Minimal TV Launcher."
+"ja-JP","Japanese","Minimal TV Launcher & 管理","機能的でシンプルなAndroid TV用ホーム画面。保護者による制限機能付き。","Minimal TV Launcherは、Android TVおよびGoogle TV専用に設計されたシンプルで洗練されたホームアプリです。家族で安心して使えるペアレンタルコントロール機能を搭載しています。
+
+主な特徴
+
+• 広告のないシンプルな画面: スポンサー枠や邪魔な広告がなく、動画やゲームアプリに素早くアクセスできます。
+• 自動カテゴリ整理: アプリを「配信」「ゲーム」「教育」「ツール」などに整理して表示します。
+• スクリーンタイム制限: お子様のご利用時間を設定可能。時間が来ると自動的に画面がロックされます。
+• おやすみモード: 夜間の利用を制限し、規則正しい睡眠習慣をサポートします。
+• 4桁の保護者PINコード: 各種設定や制限の解除を暗証番号でしっかり保護します。
+• PIN再設定機能: 暗証番号をお忘れの場合もメール認証で安全に再設定できます。
+• リビング向けテーマ: ダークモード（映画館風）とライトモードをワンタッチで切り替え可能。
+• 高いプライバシー保護: オフライン設計。個人情報の収集や外部トラッキングは一切行いません。
+• リモコン完全対応: TVリモコンの十字キー（D-pad）でスムーズに操作できます。
+
+快適で安心なテレビライフをMinimal TV Launcherでお楽しみください。"
+"ko-KR","Korean","Minimal TV 런처 & 자녀보호","깔끔한 안드로이드 TV 런처와 강력한 자녀 보호 및 시청 시간 제한 기능.","Minimal TV Launcher는 Android TV 및 Google TV를 위한 깔끔하고 직관적인 홈 화면 런처입니다. 가족을 위한 안전한 시청 환경과 자녀 보호 기능을 제공합니다.
+
+주요 기능
+
+• 광고 없는 깔끔한 홈 화면: 불필요한 추천 및 광고 없이 스트리밍과 게임 앱에 바로 접근할 수 있습니다.
+• 스마트 앱 카테고리: 스트리밍, 게임, 교육, 도구 등으로 앱을 깔끔하게 분류합니다.
+• 일일 시청 시간 제한: 자녀의 TV 이용 시간을 설정하고 한도 도달 시 화면을 안전하게 잠급니다.
+• 취침 시간 잠금: 밤 시간대 앱 실행을 차단하여 건강한 수면 습관을 돕습니다.
+• 4자리 부모 PIN 코드: 설정 및 앱 잠금 해제를 안전한 비밀번호로 보호합니다.
+• PIN 복구 지원: 비밀번호 분실 시 이메일 인증을 통해 간편하게 재설정할 수 있습니다.
+• 거실 맞춤형 테마: 다크 모드(야간 시네마)와 라이트 모드를 자유롭게 전환할 수 있습니다.
+• 철저한 개인정보 보호: 로컬 오프라인 작동 방식으로 개인정보 수집 및 추적이 없습니다.
+• TV 리모컨 최적화: 방향키(D-pad)로 쾌적하고 부드럽게 탐색할 수 있습니다.
+
+Minimal TV Launcher로 온 가족이 안심하고 TV를 사용해 보세요."
+"zh-CN","Simplified Chinese","Minimal TV 桌面与家长控制","简洁无广告的安卓电视桌面，内置儿童使用时长限制与就寝锁定。","Minimal TV Launcher 是一款专为 Android TV 和 Google TV 设计的极简电视桌面应用。界面干净清爽，兼具强大的家长控制与时间管理功能。
+
+核心功能
+
+• 极简无广告主页：去除冗余推荐与广告干扰，快速开启常用影视、游戏与学习应用。
+• 智能应用分类：清晰整理影音流媒体、游戏、教育、工具等应用分类。
+• 每日屏幕时间限制：为孩子设定健康的每日观看时长，超时后自动柔和锁屏。
+• 就寝时间守护：设置夜间睡眠时间段，自动锁定应用使用，培养规律作息。
+• 4位家长专属PIN码：安全锁定设置面板与临时权限变更。
+• 安全找回PIN码：支持通过安全邮箱验证快速重置家长密码。
+• 客厅专属双主题：支持深色影院模式与明亮客厅模式自由切换。
+• 隐私安全保障：全本地离线运行，不收集个人隐私与行为数据。
+• 遥控器完美适配：针对电视遥控器方向键（D-pad）深度优化，操作流畅。
+
+使用 Minimal TV Launcher，打造清爽安全的家庭客厅大屏体验。"
+"zh-TW","Traditional Chinese","Minimal TV 桌面與家長控制","簡潔無廣告的 Android TV 桌面，內建使用時長限制與就寢鎖定。","Minimal TV Launcher 是一款專為 Android TV 與 Google TV 設計的極簡電視桌面應用。介面乾淨俐落，提供完整的家長監護與時長管理功能。
+
+主要功能
+
+• 極簡無廣告首頁：告別繁雜的廣告與推薦橫幅，快速啟動常用的影音串流與遊戲應用。
+• 智慧應用分類：直覺整理串流媒體、遊戲、教育與工具各類應用。
+• 每日螢幕時間限制：為孩童設定每日使用上限，時間到達時自動安全鎖定。
+• 就寢時間守護：設定夜間鎖定時段，守護良好作息規律。
+• 4位數家長安全密碼：嚴格保護設定面板與解鎖權限。
+• 密碼重設機制：忘記密碼時可透過電子郵件驗證安全重設。
+• 雙重客廳主題：隨心切換夜間劇院（深色）與明亮客廳（淺色）主題。
+• 重視隱私與安全：純本機離線運作，絕不蒐集個人資訊或使用軌跡。
+• 遙控器完美適配：針對電視遙控器方向鍵（D-pad）優化，操作順暢自然。
+
+透過 Minimal TV Launcher，為全家人帶來輕鬆安心的智慧電視體驗。"
+"vi-VN","Vietnamese","Minimal TV Launcher & Quản Lý","Giao diện Android TV tối giản, mượt mà cùng tính năng quản lý trẻ em.","Minimal TV Launcher mang đến màn hình chính gọn gàng, không quảng cáo dành riêng cho Android TV và Google TV. Thiết kế tối ưu cho gia đình với các công cụ kiểm soát thời gian thông minh.
+
+TÍNH NĂNG NỔI BẬT
+
+• Giao Diện Tối Giản: Truy cập nhanh các ứng dụng xem phim, học tập và trò chơi mà không bị làm phiền bởi quảng cáo rác.
+• Phân Loại Thông Minh: Tự động sắp xếp ứng dụng theo Truyền hình, Trò chơi, Giáo dục và Công cụ.
+• Giới Hạn Thời Gian Xem: Đặt giới hạn thời gian xem TV mỗi ngày cho trẻ. Màn hình tự động khóa khi hết giờ.
+• Khóa Giờ Đi Ngủ: Tự động chặn ứng dụng vào ban đêm để rèn luyện thói quen ngủ đúng giờ.
+• Mã PIN Phụ Huynh 4 Số: Bảo vệ toàn bộ cài đặt và quyền mở khóa bằng mã PIN bảo mật.
+• Khôi Phục Mã PIN: Dễ dàng đặt lại mã PIN qua xác thực email an toàn khi quên.
+• Giao Diện Phòng Khách: Chuyển đổi linh hoạt giữa Chế độ Tối (Rạp phim đêm) và Chế độ Sáng.
+• Bảo Mật & Riêng Tư: Hoạt động hoàn toàn ngoại tuyến. Không thu thập dữ liệu cá nhân hay theo dõi người dùng.
+• Tối Ưu Cho Điều Khiển TV: Điều hướng mượt mà, chính xác với các phím điều hướng D-pad của remote.
+
+Trải nghiệm không gian giải trí an toàn và ngăn nắp cùng Minimal TV Launcher."
+"ar-SA","Arabic","Minimal TV Launcher والتحكم","واجهة أندرويد تي في بسيطة وسريعة مع ميزات الرقابة الأبوية الذكية.","يوفر Minimal TV Launcher واجهة رئيسية أنيقة وخالية من المشتتات لأجهزة Android TV و Google TV. صُمم خصيصاً للعائلات لتوفير بيئة مشاهدة آمنة ومنظمة.
+
+الميزات الرئيسية
+
+• شاشة رئيسية بدون مشتتات: وصول فوري لتطبيقات البث والألعاب والتعليم بدون إعلانات مزعجة.
+• تصنيف ذكي للتطبيقات: تنظيم التطبيقات بسهولة في فئات البث، والألعاب، والتعليم، والأدوات.
+• تحديد وقت الشاشة اليومي: ضبط وقت استخدام يومي للأطفال مع قفل الشاشة تلقائياً عند انتهاء الوقت.
+• وضع وقت النوم: قفل التطبيقات أثناء ساعات الليل للمساعدة في تنظيم أوقات النوم.
+• رمز PIN الأبوي المكون من 4 أرقام: حماية الإعدادات وإلغاء القفل برمز سري موثوق.
+• استعادة رمز PIN: استعادة سهلة للرمز السري عبر تأكيد البريد الإلكتروني.
+• سمات غرفة المعيشة: التبديل السلس بين الوضع الداكن (سينما ليلية) والوضع الفاتح.
+• خصوصية وأمان تام: يعمل بدون اتصال بالإنترنت دون جمع أي بيانات شخصية أو تتبع.
+• متوافق تماماً مع جهاز التحكم: تحكم سلس ودقيق باستخدام أزرار الاتجاهات (D-pad) لجهاز التحكم عن بُعد.
+
+استمتع بتجربة تلفزيون آمنة ومنظمة مع Minimal TV Launcher."
+"hi-IN","Hindi","Minimal TV Launcher व नियंत्रण","सरल और सुरक्षित Android TV लॉन्चर, जिसमें पैरेंटल कंट्रोल शामिल है।","Minimal TV Launcher आपके Android TV और Google TV के लिए एक साफ़ और विज्ञापन-मुक्त होम स्क्रीन प्रदान करता है। यह परिवारों के लिए एक सुरक्षित और व्यवस्थित टीवी अनुभव सुनिश्चित करता है।
+
+मुख्य विशेषताएँ
+
+• साफ़ होम स्क्रीन: बिना किसी विज्ञापन या अनावश्यक अनुशंसाओं के अपने पसंदीदा ऐप्स सीधे खोलें।
+• स्मार्ट ऐप श्रेणियाँ: ऐप्स को स्ट्रीमिंग, गेम्स, शिक्षा और टूल्स में व्यवस्थित करें।
+• स्क्रीन समय सीमा: बच्चों के लिए दैनिक समय सीमा तय करें। समय पूरा होने पर स्क्रीन स्वतः लॉक हो जाती है।
+• सोने का समय मोड: रात के समय ऐप्स को लॉक करें ताकि बच्चे समय पर सो सकें।
+• 4-अंकों का पेरेंटल पिन: सेटिंग्स और अनलॉक को सुरक्षित पिन कोड से सुरक्षित रखें।
+• आसान पिन रिकवरी: पिन भूल जाने पर ईमेल सत्यापन के माध्यम से आसानी से रीसेट करें।
+• डार्क और लाइट थीम: नाइट सिनेमा (डार्क) और ब्राइट लिविंग रूम (लाइट) थीम में आसानी से स्विच करें।
+• पूर्ण गोपनीयता: पूरी तरह ऑफ़लाइन कार्य करता है। कोई व्यक्तिगत डेटा एकत्र या ट्रैक नहीं किया जाता।
+• रिमोट के अनुकूल: टीवी रिमोट के डी-पैड (D-pad) बटनों के साथ सहज नेविगेशन।
+
+Minimal TV Launcher के साथ अपने टीवी को सरल और सुरक्षित बनाएं।"
+"bn-BD","Bengali","Minimal TV Launcher কন্ট্রোল","পরিচ্ছন্ন অ্যান্ড্রয়েড টিভি লঞ্চার ও প্যারেন্টাল কন্ট্রোল সুবিধা।","Minimal TV Launcher আপনার Android TV এবং Google TV-এর জন্য একটি পরিচ্ছন্ন ও বিজ্ঞাপনহীন হোম স্ক্রিন অভিজ্ঞতা প্রদান করে। পরিবারের জন্য এটি একটি নিরাপদ ও সুন্দর সমাধান।
+
+মূল বৈশিষ্ট্যসমূহ
+
+• পরিচ্ছন্ন হোম স্ক্রিন: কোনো অপ্রয়োজনীয় বিজ্ঞাপন ছাড়াই স্ট্রিমিং ও গেম অ্যাপ ব্যবহার করুন।
+• স্মার্ট বিভাগ: অ্যাপগুলোকে স্ট্রিমিং, গেমস, শিক্ষা এবং টুলস ক্যাটাগরিতে সাজিয়ে রাখুন।
+• স্ক্রিন টাইম লিমিট: শিশুদের জন্য প্রতিদিনের দেখার সময়সীমা নির্ধারণ করুন। সময় শেষ হলে স্ক্রিন লক হয়ে যাবে।
+• ঘুমের সময় মোড: রাতে অ্যাপ ব্যবহার সীমিত করে নিয়মিত ঘুমের অভ্যাস তৈরি করুন।
+• ৪-সংখ্যার প্যারেন্টাল পিন: সেটিংস ও আনলক সুরক্ষিত রাখতে একটি গোপন পিন ব্যবহার করুন।
+• পিন পুনরুদ্ধারের সুবিধা: পিন ভুলে গেলে ইমেইল ভেরিফিকেশনের মাধ্যমে সহজে রিসেট করুন।
+• সুন্দর থিম: ডার্ক মোড এবং লাইট মোডের মধ্যে সহজে পরিবর্তন করার সুবিধা।
+• সম্পূর্ণ গোপনীয়তা: সম্পূর্ণ অফলাইনে কাজ করে। কোনো ব্যক্তিগত তথ্য সংগ্রহ বা ট্র্যাক করা হয় না।
+• টিভি রিমোট উপযোগী: রিমোটের ডিরেকশনাল বাটন দিয়ে সহজেই পরিচালনা করা যায়।
+
+Minimal TV Launcher ব্যবহার করে আপনার টিভিকে নিরাপদ ও সহজ রাখুন।"
+"id-ID","Indonesian","Minimal TV Launcher & Kontrol","Peluncur Android TV yang bersih dan cepat dengan kontrol orang tua terpadu.","Minimal TV Launcher menghadirkan tampilan beranda yang rapi dan bebas gangguan untuk Android TV dan Google TV. Dirancang untuk keluarga dengan fitur kontrol orang tua yang lengkap.
+
+FITUR UTAMA
+
+• Beranda Bebas Iklan: Buka aplikasi streaming, game, dan edukasi tanpa iklan atau rekomendasi yang mengganggu.
+• Kategori Aplikasi Pintar: Susun aplikasi ke dalam kategori Streaming, Game, Edukasi, dan Alat.
+• Batas Waktu Layar Harian: Atur waktu menonton harian untuk anak. Layar otomatis terkunci saat waktu habis.
+• Jadwal Waktu Tidur: Batasi akses aplikasi di malam hari untuk menjaga pola tidur sehat.
+• PIN Orang Tua 4 Digit: Lindungi pengaturan dan pembukaan kunci dengan kode PIN yang aman.
+• Pemulihan PIN Mudah: Reset PIN orang tua dengan aman melalui verifikasi email jika lupa.
+• Tema Ruang Tamu: Beralih dengan mudah antara Mode Gelap (Bioskop Malam) dan Mode Terang.
+• Privasi Terjamin: Berjalan offline sepenuhnya tanpa pengumpulan data pribadi atau pelacakan.
+• Optimal untuk Remote TV: Navigasi mulus menggunakan tombol arah (D-pad) remote control TV.
+
+Jadikan ruang keluarga lebih nyaman dan aman dengan Minimal TV Launcher."
+"tr-TR","Turkish","Minimal TV Başlatıcı & Kontrol","Ebeveyn denetimi özellikli sade ve hızlı Android TV başlatıcısı.","Minimal TV Launcher, Android TV ve Google TV cihazları için sade, reklamsız ve kullanımı kolay bir ana ekran deneyimi sunar. Aileler için ebeveyn denetimi araçlarıyla donatılmıştır.
+
+ÖNE ÇIKAN ÖZELLİKLER
+
+• Sade Ana Ekran: Rahatsız edici reklamlar veya sponsorlu içerikler olmadan favori uygulamalarınıza hızla ulaşın.
+• Akıllı Kategoriler: Uygulamalarınızı Yayın, Oyunlar, Eğitim ve Araçlar olarak düzenleyin.
+• Günlük Ekran Süresi Sınırı: Çocuklar için günlük süre belirleyin; süre bittiğinde ekran kilitlensin.
+• Uyku Vakti Modu: Düzenli uyku alışkanlığı için gece saatlerinde uygulama erişimini engelleyin.
+• 4 Haneli Ebeveyn PIN Kodu: Ayarları ve kilit açma işlemlerini güvenli bir PIN ile koruyun.
+• PIN Sıfırlama Kolaylığı: Unutulan PIN kodunu e-posta doğrulamasıyla kolayca yenileyin.
+• Oturma Odası Temaları: Koyu Tema (Gece Sineması) ve Açık Tema arasında kolayca geçiş yapın.
+• Tam Gizlilik: Çevrimdışı çalışır. Kişisel veri toplamaz veya kullanıcıyı takip etmez.
+• TV Kumandasına Tam Uyum: Kumandanın yön tuşlarıyla (D-pad) akıcı ve rahat kontrol.
+
+Minimal TV Launcher ile televizyonunuzu daha düzenli ve aileniz için güvenli hale getirin."
+"th-TH","Thai","Minimal TV Launcher & ดูแลเด็ก","ลอนเชอร์ Android TV เรียบง่าย ไร้โฆษณา พร้อมระบบควบคุมสำหรับผู้ปกครอง","Minimal TV Launcher นำเสนอหน้าจอหลักที่เรียบง่ายและสะอาดตาสำหรับ Android TV และ Google TV ออกแบบมาเพื่อครอบครัวที่ต้องการความปลอดภัยและไร้สิ่งรบกวน
+
+ฟีเจอร์เด่น
+
+• หน้าจอหลักสะอาดตา: เข้าถึงแอปสตรีมมิ่ง เกม และการศึกษาได้รวดเร็ว โดยไม่มีโฆษณาหรือแถบแนะนำกวนใจ
+• จัดหมวดหมู่อัจฉริยะ: แยกแอปเป็นหมวดสตรีมมิ่ง เกม การศึกษา และเครื่องมืออย่างเป็นระเบียบ
+• จำกัดเวลาหน้าจอรายวัน: ตั้งเวลาการใช้งานสำหรับเด็ก เมื่อหมดเวลาหน้าจอจะล็อคอัตโนมัติ
+• โหมดเวลานอน: ล็อคการเปิดแอปช่วงเวลากลางคืนเพื่อเสริมสร้างวินัยการนอนที่ดี
+• รหัส PIN ผู้ปกครอง 4 หลัก: ปกป้องการตั้งค่าและการปลดล็อคด้วยรหัสผ่านที่ปลอดภัย
+• กู้คืนรหัส PIN ได้ง่าย: รีเซ็ตรหัสผ่านได้อย่างปลอดภัยผ่านการยืนยันทางอีเมล
+• ธีมห้องนั่งเล่น: สลับระหว่างโหมดมืด (โรงภาพยนตร์ยามค่ำ) และโหมดสว่างได้อย่างอิสระ
+• ปลอดภัยและเป็นส่วนตัว: ทำงานแบบออฟไลน์ ไม่มีการเก็บข้อมูลส่วนบุคคลหรือติดตามการใช้งาน
+• รองรับรีโมททีวีเต็มรูปแบบ: ควบคุมได้อย่างลื่นไหลด้วยปุ่มทิศทาง (D-pad) บนรีโมท
+
+สร้างบรรยากาศการดูทีวีที่ปลอดภัยและเป็นระเบียบด้วย Minimal TV Launcher"
+"pl-PL","Polish","Minimal TV Launcher i Kontrola","Przejrzysty launcher na Android TV z wbudowaną kontrolą rodzicielską.","Minimal TV Launcher to przejrzysty i intuicyjny ekran główny dla urządzeń Android TV oraz Google TV. Zaprojektowany z myślą o rodzinach, łączy prostotę z funkcjami ochrony rodzicielskiej.
+
+GŁÓWNE CECHY
+
+• Ekran Bez Zbędnych Elementów: Szybki dostęp do serwisów streamingowych i gier bez natrętnych reklam.
+• Inteligentne Kategorie: Organizuj aplikacje w kategorie: Streaming, Gry, Edukacja i Narzędzia.
+• Dzienny Limit Czasu Ekranu: Ustaw maksymalny czas oglądania dla dzieci z automatyczną blokadą.
+• Tryb Pory Snu: Blokuj dostęp do aplikacji w godzinach nocnych, aby zadbać o zdrowy sen.
+• 4-Cyfrowy PIN Rodzicielski: Chroń ustawienia i odblokowywanie aplikacji bezpiecznym kodem.
+• Odzyskiwanie Kodu PIN: Bezpieczny i szybki reset kodu PIN za pomocą weryfikacji e-mail.
+• Motywy do Salonu: Przełączaj między Trybem Ciemnym (Nocne Kino) a Trybem Jasnym.
+• Pełna Prywatność: Aplikacja działa lokalnie offline. Brak zbierania danych osobowych i śledzenia.
+• Zoptymalizowany pod Pilota: Wygodna nawigacja za pomocą przycisków kierunkowych (D-pad).
+
+Wprowadź porządek i bezpieczeństwo do swojego salonu z Minimal TV Launcher."
+"nl-NL","Dutch","Minimal TV Launcher & Controle","Strakke Android TV-launcher met ingebouwd ouderlijk toezicht.","Minimal TV Launcher biedt een opgeruimd en rustig startscherm voor Android TV en Google TV. Ontworpen voor gezinnen, combineert het eenvoud met krachtig ouderlijk toezicht.
+
+BELANGRIJKSTE FUNCTIES
+
+• Rustig Startscherm: Direct toegang tot streaming, games en educatieve apps zonder advertenties of aanbevelingen.
+• Slimme Categorieën: Sorteer apps overzichtelijk in Streaming, Games, Educatie en Hulpprogramma's.
+• Dagelijkse Schermtijdlimieten: Stel dagelijkse tv-tijd in voor kinderen. Het scherm vergrendelt automatisch als de tijd op is.
+• Bedtijdmodus: Blokkeer app-toegang tijdens de nacht voor een goede nachtrust.
+• 4-Cijferige Ouderlijke Pincode: Beveilig instellingen en ontgrendeling met een geheime code.
+• Pincode Herstellen: Eenvoudig de pincode resetten via e-mailverificatie bij verlies.
+• Woonkamerthema's: Schakel soepel tussen Donkere Modus (Nachtbioscoop) en Lichte Modus.
+• Volledige Privacy: Werkt volledig lokaal en offline. Geen gegevensverzameling of tracking.
+• Geoptimaliseerd voor Afstandsbediening: Vloeiende bediening via de navigatietoetsen (D-pad).
+
+Maak uw tv-ervaring overzichtelijk en veilig met Minimal TV Launcher."
+"uk-UA","Ukrainian","Minimal TV Лаунчер і Контроль","Зручний лаунчер для Android TV із надійним батьківським контролем.","Minimal TV Launcher — це простий, швидкий та зручний головний екран для Android TV та Google TV. Створений для сімейного комфорту, він поєднує мінімалістичний дизайн із захистом дітей.
+
+ОСНОВНІ ФУНКЦІЇ
+
+• Чистий головний екран: Жодної нав'язливої реклами чи небажаних рекомендацій.
+• Розумні категорії: Впорядковуйте додатки за розділами: Стрімінг, Ігри, Навчання та Інструменти.
+• Ліміт екранного часу: Встановлюйте щоденні обмеження перегляду телевізора для дітей.
+• Режим сну: Автоматичне блокування додатків у нічний час для підтримки здорового режиму.
+• 4-значний батьківський PIN-код: Захист налаштувань та розблокування надійним паролем.
+• Відновлення PIN-коду: Зручне скидання забутого коду через підтвердження електронною поштою.
+• Теми для вітальні: Легке перемикання між Темною (Нічний кінотеатр) та Світлою темами.
+• Повна конфіденційність: Працює офлайн без збору персональних даних чи стеження.
+• Оптимізовано для пульта TV: Зручне керування за допомогою кнопок навігації (D-pad).
+
+Зробіть перегляд телевізора приємним і безпечним із Minimal TV Launcher."
+"ro-RO","Romanian","Minimal TV Launcher & Control","Lansator Android TV curat și rapid, cu control parental integrat.","Minimal TV Launcher oferă un ecran principal curat și fără distrageri pentru Android TV și Google TV. Creat pentru familii, combină simplitatea cu funcții sigure de control parental.
+
+CARACTERISTICI PRINCIPALE
+
+• Ecran Principal Fără Distrageri: Deschide rapid aplicațiile de streaming și jocuri fără reclame deranjante.
+• Categorii Inteligente: Organizează aplicațiile în Streaming, Jocuri, Educație și Utilitare.
+• Limite Zilnice de Timp la Ecran: Setează timpul zilnic pentru copii. Ecranul se blochează la expirarea timpului.
+• Program pentru Ora de Culcare: Blochează accesul la aplicații noaptea pentru un somn odihnitor.
+• PIN Parental din 4 Cifre: Protejează setările și deblocarea cu un cod PIN de securitate.
+• Recuperare PIN: Resetare facilă a codului PIN prin verificare pe e-mail.
+• Teme pentru Living: Comutare rapidă între Mod Întunecat (Cinema de Noapte) și Mod Luminos.
+• Confidențialitate Garantată: Funcționare offline fără colectare de date personale sau urmărire.
+• Optimizat pentru Telecomandă: Navigare fluidă și precisă cu tastele direcționale D-pad.
+
+Bucură-te de o experiență TV organizată și sigură cu Minimal TV Launcher."
+"el-GR","Greek","Minimal TV Launcher & Έλεγχος","Καθαρή αρχική οθόνη Android TV με ενσωματωμένο γονικό έλεγχο.","Το Minimal TV Launcher προσφέρει μια καθαρή και λιτή αρχική οθόνη για συσκευές Android TV και Google TV. Σχεδιασμένο για οικογένειες, συνδυάζει ευκολία και γονικό έλεγχο.
+
+ΚΥΡΙΑ ΧΑΡΑΚΤΗΡΙΣΤΙΚΑ
+
+• Αρχική Οθόνη Χωρίς Περισπασμούς: Άμεση πρόσβαση σε streaming και παιχνίδια χωρίς διαφημίσεις.
+• Έξυπνες Κατηγορίες: Οργανώστε τις εφαρμογές σε Streaming, Παιχνίδια, Εκπαίδευση και Εργαλεία.
+• Ημερήσια Όρια Χρόνου Οθόνης: Ορίστε ημερήσιο χρόνο χρήσης για τα παιδιά με αυτόματο κλείδωμα.
+• Λειτουργία Ώρας Ύπνου: Περιορίστε τη χρήση εφαρμογών τη νύχτα για καλύτερο ύπνο.
+• 4ψήφιο Γονικό PIN: Προστατέψτε τις ρυθμίσεις και το ξεκλείδωμα με έναν ασφαλή κωδικό.
+• Επαναφορά PIN: Εύκολη επαναφορά κωδικού PIN μέσω επιβεβαίωσης email.
+• Θέματα Σαλονιού: Επιλέξτε ανάμεσα σε Σκούρο Θέμα (Νυχτερινό Σινεμά) και Φωτεινό Θέμα.
+• Πλήρης Ιδιωτικότητα: Λειτουργεί εκτός σύνδεσης χωρίς συλλογή προσωπικών δεδομένων ή καταγραφή.
+• Βελτιστοποιημένο για Τηλεχειριστήριο: Άνετη πλοήγηση με τα βελάκια κατεύθυνσης (D-pad).
+
+Κάντε την τηλεόρασή σας πιο ασφαλή και οργανωμένη με το Minimal TV Launcher."
+"cs-CZ","Czech","Minimal TV Launcher & Kontrola","Přehledný spouštěč pro Android TV s integrovanou rodičovskou kontrolou.","Minimal TV Launcher přináší přehlednou a nerušenou domovskou obrazovku pro Android TV a Google TV. Vytvořeno pro rodiny, které hledají snadné ovládání a spolehlivou rodičovskou kontrolu.
+
+HLAVNÍ FUNKCE
+
+• Obrazovka Bez Rušení: Rychlý přístup ke streamování a hrám bez otravných reklam a sponzorovaných řádků.
+• Chytré Kategorie: Přehledné rozdělení aplikací na Streamování, Hry, Vzdělávání a Nástroje.
+• Denní Limity Času u Obrazovky: Nastavte denní limit pro děti. Po vypršení se obrazovka zamkne.
+• Režim Večerky: Blokujte spouštění aplikací v noci pro zdravý spánek vašich dětí.
+• 4místný Rodičovský PIN: Zabezpečte nastavení a odemykání aplikací bezpečnostním kódem.
+• Obnovení PINu: Snadné a bezpečné obnovení zapomenutého PINu přes ověření e-mailem.
+• Motivy pro Obývací Pokoj: Přepínejte mezi Tmavým režimem (Večerní kino) a Světlým režimem.
+• Ochrana Soukromí: Funguje zcela offline bez sběru osobních údajů a sledování.
+• Optimalizováno pro TV Ovladač: Plynulá a přesná navigace pomocí směrových tlačítek (D-pad).
+
+Získejte kontrolu a pořádek na své televizi s aplikací Minimal TV Launcher."
+"sv-SE","Swedish","Minimal TV Launcher & Kontroll","Ren och snabb Android TV-startskärm med inbyggd föräldrakontroll.","Minimal TV Launcher ger en ren och distraktionsfri startskärm för Android TV och Google TV. Perfekt anpassad för familjer med smarta verktyg för föräldrakontroll.
+
+HUVUDFUNKTIONER
+
+• Distraktionsfri Startskärm: Snabb åtkomst till streaming, spel och utbildning utan irriterande annonser.
+• Smarta Appkategorier: Organisera dina appar i Streaming, Spel, Utbildning och Verktyg.
+• Dagliga Skärmtidsgränser: Sätt en tidsgräns för barnen. Skärmen låses automatiskt när tiden tar slut.
+• Läggdagsläge: Begränsa appanvändning under natten för bättre sömnvanor.
+• 4-Siffrig Föräldra-PIN: Skydda inställningar och tillfällig upplåsning med en säker PIN-kod.
+• Återställning av PIN: Enkel återställning av PIN-koden via e-postverifiering om du glömmer den.
+• Vardagsrumsteman: Växla smidigt mellan Mörkt läge (Kvällsbio) och Ljust läge.
+• Fullständig Integritet: Helt offline-anpassad utan insamling av personuppgifter eller spårning.
+• Optimerad för TV-fjärrkontroll: Smidig navigering med fjärrkontrollens styrkors (D-pad).
+
+Skapa en trygg och stilren TV-miljö för hela familjen med Minimal TV Launcher."
+"hu-HU","Hungarian","Minimal TV Launcher & Védelem","Letisztult Android TV felület beépített szülői felügyelettel.","A Minimal TV Launcher letisztult, zavaró tényezőktől mentes kezdőképernyőt biztosít Android TV és Google TV eszközökhöz. Családok számára készült, megbízható szülői felügyelettel.
+
+FŐBB JELLEMZŐK
+
+• Zavarmentes Kezdőképernyő: Gyors hozzáférés a streaming és játék alkalmazásokhoz reklámok nélkül.
+• Okos Kategóriák: Rendszerezze alkalmazásait Streaming, Játékok, Oktatás és Eszközök szerint.
+• Napi Képernyőidő Korlátok: Állítson be napi időkorlátot a gyerekeknek; lejáratkor a képernyő zárolódik.
+• Lefekvési Idő Mód: Blokkolja az alkalmazások indítását éjszaka a pihentető alvás érdekében.
+• 4-Jegyű Szülői PIN Kód: Védje a beállításokat és a feloldást biztonságos PIN kóddal.
+• PIN Visszaállítás: Biztonságos és egyszerű PIN visszaállítás e-mailes ellenőrzéssel.
+• Nappali Témák: Váltson könnyedén a Sötét Mód (Éjszakai Mozi) és a Világos Mód között.
+• Teljes Adatvédelem: Teljesen offline működés. Nem gyűjt és nem továbbít személyes adatokat.
+• Távirányítóra Optimalizálva: Kényelmes és pontos navigáció a TV távirányító iránygombjaival (D-pad).
+
+Tegye egyszerűvé és biztonságossá a tévézést a Minimal TV Launcher segítségével."
+"da-DK","Danish","Minimal TV Launcher & Kontrol","Enkel og hurtig Android TV-starter med integreret forældrekontrol.","Minimal TV Launcher giver en overskuelig og distraktionsfri startskærm til Android TV og Google TV. Skabt til familier med fokus på enkelhed og tryg forældrekontrol.
+
+NØGLEFUNKTIONER
+
+• Distraktionsfri Startskærm: Få hurtig adgang til streaming, spil og læringsapps uden reklamer.
+• Intelligente Kategorier: Organiser nemt dine apps i Streaming, Spil, Læring og Værktøjer.
+• Daglige Skærmtidsgrænser: Sæt daglige tidsgrænser for børnene. Skærmen låser automatisk, når tiden er gået.
+• Sengetidstilstand: Bloker adgang til apps om natten for at støtte gode sovevaner.
+• 4-Cifret Forældre-PIN: Beskyt indstillinger og oplåsning med en sikker PIN-kode.
+• PIN-Gendannelse: Nulstil nemt og sikkert din PIN-kode via e-mailbekræftelse.
+• Stuetemaer: Skift mellem Mørk Tilstand (Aftenbiograf) og Lys Tilstand.
+• Fuld Databeskyttelse: Fungerer 100% offline uden indsamling af personlige data eller sporing.
+• Optimeret til Fjernbetjening: Hurtig og præcis styring med fjernbetjeningens piletaster (D-pad).
+
+Gør stuen mere overskuelig og børnevenlig med Minimal TV Launcher."
+"fi-FI","Finnish","Minimal TV Launcher & Hallinta","Selkeä Android TV -aloitusnäyttö sisäänrakennetulla lapsilukolla.","Minimal TV Launcher tarjoaa selkeän ja häiriöttömän aloitusnäytön Android TV- ja Google TV -laitteille. Suunniteltu perheille, yhdistäen helppokäyttöisyyden ja luotettavan lapsilukon.
+
+TÄRKEIMMÄT OMINAISUUDET
+
+• Häiriötön Aloitusnäyttö: Nopea pääsy suoratoisto- ja pelisovelluksiin ilman häiritseviä mainoksia.
+• Älykäs Sovellusjaottelu: Järjestä sovellukset suoratoiston, pelien, oppimisen ja työkalujen mukaan.
+• Päivittäiset Ruutuaikarajat: Aseta lapsille päivittäinen aikaraja, jonka jälkeen näyttö lukittuu automaattisesti.
+• Nukkumaanmenotila: Estä sovellusten käyttö yöaikaan terveellisten unirutiinien tueksi.
+• 4-Numeroinen Vanhemman PIN: Suojaa asetukset ja lukituksen avaus turvallisella koodilla.
+• PIN-koodin Palautus: Helppo ja turvallinen PIN-koodin nollaus sähköpostivahvistuksella.
+• Olohuoneen Teemat: Vaihda vaivattomasti Tumman tilan (Yöelokuvat) ja Vaalean tilan välillä.
+• Täysi Yksityisyys: Toimii täysin paikallisesti ilman henkilötietojen keräämistä tai seurantaa.
+• Kaukosäädinoptimoitu: Sujuva ja tarkka navigointi television kaukosäätimen suuntanäppäimillä (D-pad).
+
+Tuo selkeyttä ja turvallisuutta television katseluun Minimal TV Launcherilla."
+"no-NO","Norwegian","Minimal TV Launcher & Kontroll","Enkel og rask Android TV-startskjerm med innebygd foreldrekontroll.","Minimal TV Launcher gir en ren og distrasjonsfri startskjerm for Android TV og Google TV. Tilpasset for barnefamilier med trygg og fleksibel foreldrekontroll.
+
+HOVEDFUNKSJONER
+
+• Distrasjonsfri Startskjerm: Rask tilgang til strømmeapper og spill uten forstyrrende annonser.
+• Smarte Appkategorier: Organiser appene dine i Strømming, Spill, Læring og Verktøy.
+• Daglige Skjermtidsgrenser: Sett daglige tidsgrenser for barna. Skjermen låses når tiden er brukt opp.
+• Leggetidsmodus: Begrens apptilgang om natten for å sikre gode søvnrutiner.
+• 4-Sifret Foreldre-PIN: Sikre innstillinger og opplåsing med en hemmelig PIN-kode.
+• Enkel PIN-Gjenoppretting: Tilbakestill PIN-koden trygt via e-postbekreftelse hvis du glemmer den.
+• Stuetemaer: Bytt enkelt mellom Mørk Modus (Kino) og Lys Modus.
+• Fullt Personvern: Kjører 100% lokalt offline uten innsamling av personopplysninger eller sporing.
+• Optimalisert for TV-Fjernkontroll: Rask og nøyaktig navigasjon med fjernkontrollens piltaster (D-pad).
+
+Gjør TV-opplevelsen enkel og familievennlig med Minimal TV Launcher."
+"ms-MY","Malay","Minimal TV Launcher & Kawalan","Pelancar Android TV bersih dan pantas dengan kawalan ibu bapa terbina.","Minimal TV Launcher menawarkan skrin utama yang kemas dan bebas gangguan untuk Android TV dan Google TV. Direka khas untuk keluarga dengan ciri kawalan ibu bapa yang lengkap.
+
+CIRI-CIRI UTAMA
+
+• Skrin Utama Bebas Iklan: Akses pantas ke aplikasi penstriman, permainan dan pembelajaran tanpa gangguan iklan.
+• Kategori Aplikasi Pintar: Susun aplikasi mengikut Penstriman, Permainan, Pendidikan dan Alatan.
+• Had Masa Skrin Harian: Tetapkan had masa tontonan harian untuk anak-anak dengan kunci automatik.
+• Mod Waktu Tidur: Sekat akses aplikasi pada waktu malam untuk menjaga waktu tidur yang teratur.
+• PIN Ibu Bapa 4 Digit: Lindungi tetapan dan buka kunci sementara dengan kod PIN selamat.
+• Pemulihan PIN Mudah: Tetapkan semula PIN ibu bapa dengan mudah melalui pengesahan e-mel.
+• Tema Ruang Tamu: Bertukar antara Mod Gelap (Pawagam Malam) dan Mod Cerah dengan mudah.
+• Privasi Terjamin: Berfungsi sepenuhnya di luar talian tanpa pengumpulan data peribadi atau penjejakan.
+• Dioptimumkan untuk Alat Kawalan TV: Navigasi lancar menggunakan butang arah (D-pad) alat kawalan jauh.
+
+Jadikan pengalaman menonton TV lebih teratur dan selamat dengan Minimal TV Launcher."
+"fil-PH","Filipino","Minimal TV Launcher & Kontrol","Malinis na Android TV launcher na may built-in na parental control.","Ang Minimal TV Launcher ay nagbibigay ng malinis at maayos na home screen para sa Android TV at Google TV. Ginawa para sa pamilya na may kumpletong parental controls.
+
+MGA PANGUNAHING TAMPOK
+
+• Maayos na Home Screen: Mabilis na buksan ang mga paboritong streaming at laro nang walang nakakainis na ads.
+• Matalinong Kategorya: Ayusin ang mga app sa Streaming, Laro, Edukasyon, at Tools.
+• Limitasyon sa Screen Time: Magtakda ng oras sa panonood ng TV para sa mga bata na may awtomatikong lock.
+• Bedtime Schedule Mode: I-lock ang mga app sa oras ng pagtulog sa gabi upang mapanatili ang tamang tulog.
+• 4-Digit Parental PIN: Protektahan ang mga setting at pag-unlock gamit ang secure na PIN code.
+• Pagbawi ng PIN: Madaling i-reset ang PIN sa pamamagitan ng email verification kapag nakalimutan.
+• Mga Tema sa Sala: Lumipat sa pagitan ng Dark Mode (Night Cinema) at Light Mode.
+• Garantisadong Pribasiya: Gumagana nang offline nang walang pangongolekta ng personal na impormasyon.
+• Angkop sa TV Remote: Maayos at mabilis na navigation gamit ang D-pad ng TV remote control.
+
+Gawing mas maayos at ligtas ang panonood ng TV gamit ang Minimal TV Launcher."

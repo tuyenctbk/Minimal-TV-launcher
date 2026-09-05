@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+
+    <!-- Cinematic Midnight TV Studio Background Gradient -->
+    <path android:pathData="M0,0h320v180h-320z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="320"
+                android:endY="180"
+                android:type="linear">
+                <item android:color="#0B0F19" android:offset="0.0" />
+                <item android:color="#17153B" android:offset="0.5" />
+                <item android:color="#2E1065" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ambient Glow Orbs -->
+    <path
+        android:pathData="M85,90m-70,0a70,70 0 1,1 140,0a70,70 0 1,1 -140,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="85"
+                android:centerY="90"
+                android:gradientRadius="70"
+                android:type="radial">
+                <item android:color="#356366F1" android:offset="0.0" />
+                <item android:color="#00000000" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <path
+        android:pathData="M270,110m-80,0a80,80 0 1,1 160,0a80,80 0 1,1 -160,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="270"
+                android:centerY="110"
+                android:gradientRadius="80"
+                android:type="radial">
+                <item android:color="#250EA5E9" android:offset="0.0" />
+                <item android:color="#00000000" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Stand Base & Pillar on the left -->
+    <path
+        android:fillColor="#4F46E5"
+        android:pathData="M78,132 h16 v10 h-16 z" />
+    <path
+        android:pathData="M64,142 h44 a3,3 0 0,1 3,3 v2 a3,3 0 0,1 -3,3 h-44 a3,3 0 0,1 -3,-3 v-2 a3,3 0 0,1 3,-3 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="64"
+                android:startY="142"
+                android:endX="111"
+                android:endY="150"
+                android:type="linear">
+                <item android:color="#818CF8" android:offset="0.0" />
+                <item android:color="#6366F1" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Display Outer Frame (3D Rounded Screen) -->
+    <path
+        android:pathData="M38,40 h96 a10,10 0 0,1 10,10 v62 a10,10 0 0,1 -10,10 h-96 a10,10 0 0,1 -10,-10 v-62 a10,10 0 0,1 10,-10 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="28"
+                android:startY="40"
+                android:endX="144"
+                android:endY="122"
+                android:type="linear">
+                <item android:color="#6366F1" android:offset="0.0" />
+                <item android:color="#4338CA" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- TV Screen Inner Deep Glass Canvas -->
+    <path
+        android:fillColor="#090D16"
+        android:pathData="M43,45 h86 a5,5 0 0,1 5,5 v52 a5,5 0 0,1 -5,5 h-86 a5,5 0 0,1 -5,-5 v-52 a5,5 0 0,1 5,-5 z" />
+
+    <!-- Screen Glare Diagonal Stripe -->
+    <path
+        android:fillColor="#15FFFFFF"
+        android:pathData="M48,45 L95,45 L70,107 L48,107 Z" />
+
+    <!-- Protective Shield Emblem inside the TV Screen -->
+    <path
+        android:pathData="M86,52 C98,52 104,57 104,57 C104,77 93,89 86,93 C79,89 68,77 68,57 C68,57 74,52 86,52 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="68"
+                android:startY="52"
+                android:endX="104"
+                android:endY="93"
+                android:type="linear">
+                <item android:color="#38BDF8" android:offset="0.0" />
+                <item android:color="#6366F1" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Shield Core Reflection -->
+    <path
+        android:pathData="M86,56 C95,56 100,60 100,60 C100,74 91,84 86,87 C81,84 72,74 72,60 C72,60 77,56 86,56 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="72"
+                android:startY="56"
+                android:endX="100"
+                android:endY="87"
+                android:type="linear">
+                <item android:color="#0EA5E9" android:offset="0.0" />
+                <item android:color="#4F46E5" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Play Arrow inside Shield -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M83,63 L93,69 L83,75 Z" />
+
+    <!-- Power Indicator LED -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M86,120m-1.5,0a1.5,1.5 0 1,1 3,0a1.5,1.5 0 1,1 -3,0" />
+
+    <!-- RIGHT SIDE BANNER BRANDING: "TV LAUNCHER" + "Kids & Family Safe" -->
+    <!-- Pill Badge: FAMILY & PARENTAL GUARD -->
+    <path
+        android:fillColor="#256366F1"
+        android:pathData="M165,48 h115 a8,8 0 0,1 8,8 v10 a8,8 0 0,1 -8,8 h-115 a8,8 0 0,1 -8,-8 v-10 a8,8 0 0,1 8,-8 z" />
+    <path
+        android:fillColor="#818CF8"
+        android:pathData="M165,48 h115 a8,8 0 0,1 8,8 v1 a8,8 0 0,1 -8,-8 h-115 a8,8 0 0,1 -8,8 v-1 a8,8 0 0,1 8,-8 z" />
+
+    <!-- Small Lock/Shield Icon beside Badge -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M170,58 C172,58 174,59 174,59 C174,64 171.5,67 170,68 C168.5,67 166,64 166,59 C166,59 168,58 170,58 Z" />
+
+    <!-- Stylized Title Letterforms for TV LAUNCHER -->
+    <!-- T -->
+    <path android:fillColor="#FFFFFF" android:pathData="M165,82 h14 v3.5 h-5 v16.5 h-4 v-16.5 h-5 z" />
+    <!-- V -->
+    <path android:fillColor="#FFFFFF" android:pathData="M182,82 h4.2 l4.8,14.5 l4.8,-14.5 h4.2 l-7,20 h-4 z" />
+
+    <!-- L -->
+    <path android:fillColor="#818CF8" android:pathData="M208,82 h4 v16.5 h9 v3.5 h-13 z" />
+    <!-- A -->
+    <path android:fillColor="#818CF8" android:pathData="M225,102 l5.5,-20 h4 l5.5,20 h-4 l-1.2,-5 h-5.8 l-1.2,5 z M230,94 h4.2 l-2.1,-9 z" />
+    <!-- U -->
+    <path android:fillColor="#818CF8" android:pathData="M244,82 h4 v13 c0,2.5 1.5,4 4,4 c2.5,0 4,-1.5 4,-4 v-13 h4 v13 c0,4.8 -3.2,7.5 -8,7.5 c-4.8,0 -8,-2.7 -8,-7.5 z" />
+    <!-- N -->
+    <path android:fillColor="#818CF8" android:pathData="M263,82 h4 l7,13.5 v-13.5 h3.8 v20 h-3.8 l-7.2,-14 v14 h-3.8 z" />
+
+    <!-- SUBTITLE BAR: "SUPERVISED SMART ENTERTAINMENT" -->
+    <path
+        android:fillColor="#20FFFFFF"
+        android:pathData="M165,116 h135 a3,3 0 0,1 3,3 v2 a3,3 0 0,1 -3,3 h-135 a3,3 0 0,1 -3,-3 v-2 a3,3 0 0,1 3,-3 z" />
+
+    <!-- Decorative Accent Dots -->
+    <path android:fillColor="#38BDF8" android:pathData="M167,130m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0" />
+    <path android:fillColor="#818CF8" android:pathData="M178,130m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0" />
+    <path android:fillColor="#A855F7" android:pathData="M189,130m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0" />
+    <path android:fillColor="#EC4899" android:pathData="M200,130m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0" />
+
+</vector>
