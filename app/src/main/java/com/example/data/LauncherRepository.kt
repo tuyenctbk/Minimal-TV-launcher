@@ -34,6 +34,11 @@ class LauncherRepository(
         dao.saveSettings(settings)
     }
 
+    suspend fun setProfileName(name: String) {
+        val settings = getSettings()
+        dao.saveSettings(settings.copy(profileName = name))
+    }
+
     suspend fun setPin(newPin: String) {
         val settings = getSettings()
         dao.saveSettings(settings.copy(pin = newPin))
@@ -59,6 +64,10 @@ class LauncherRepository(
 
     suspend fun setCategoryBlocked(category: String, isBlocked: Boolean) {
         dao.updateCategoryBlockedStatus(category, isBlocked)
+    }
+
+    suspend fun deleteAppRestriction(packageName: String) {
+        dao.deleteAppRestriction(packageName)
     }
 
     // Temporary active recovery OTP memory with 10-minute expiry
@@ -90,8 +99,19 @@ class LauncherRepository(
         dao.insertLaunchLog(LaunchLog(packageName = packageName, appName = appName))
     }
 
+    suspend fun deleteLog(logId: Int) {
+        dao.deleteLaunchLog(logId)
+    }
+
     suspend fun clearLogs() {
         dao.clearLaunchLogs()
+        dao.resetAllLaunchCounts()
+    }
+
+    suspend fun resetTodayUsage() {
+        val now = System.currentTimeMillis()
+        val settings = getSettings()
+        dao.saveSettings(settings.copy(usageTodayMs = 0L, lastActiveTimestamp = now))
     }
 
     private fun getCurrentDateString(): String {
@@ -176,6 +196,13 @@ class LauncherRepository(
         // Get DB items to preserve settings or insert new ones
         val dbApps = dao.getAllAppRestrictions()
         val dbPkgSet = dbApps.map { it.packageName }.toSet()
+
+        // Clean up uninstalled / deleted apps from database
+        val installedPkgs = installedMap.keys
+        val orphanedPkgs = dbPkgSet - installedPkgs
+        if (orphanedPkgs.isNotEmpty()) {
+            dao.deleteAppRestrictions(orphanedPkgs.toList())
+        }
 
         val newRestrictions = mutableListOf<AppRestriction>()
         for ((pkg, label) in installedMap) {

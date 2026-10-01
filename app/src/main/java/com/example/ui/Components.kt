@@ -6,9 +6,11 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -63,10 +65,11 @@ fun drawableToImageBitmap(drawable: Drawable): ImageBitmap {
  * TV Focusable Card which scales up and shows a thick high-contrast border
  * when selected, ideal for remote control focus indicators.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TvFocusableCard(
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     testTag: String = "",
     content: @Composable BoxScope.(Boolean) -> Unit
@@ -80,7 +83,6 @@ fun TvFocusableCard(
     }
 
     Card(
-        onClick = onClick,
         modifier = modifier
             .testTag(testTag)
             .scale(scale)
@@ -89,6 +91,11 @@ fun TvFocusableCard(
                 width = if (isFocused) 3.dp else 1.dp,
                 brush = Brush.horizontalGradient(borderColors),
                 shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
             )
             .focusable(),
         colors = CardDefaults.cardColors(
@@ -362,7 +369,10 @@ fun TvPinRecoveryDialog(
     var statusMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    val maskedEmail = remember(registeredEmail) {
+    val defaultEmailLabel = stringResource(R.string.recovery_registered_address_label)
+    val codeDispatchedMsg = stringResource(R.string.recovery_code_generated_valid)
+
+    val maskedEmail = remember(registeredEmail, defaultEmailLabel) {
         if (registeredEmail.contains("@")) {
             val parts = registeredEmail.split("@")
             val name = parts[0]
@@ -370,7 +380,7 @@ fun TvPinRecoveryDialog(
             val maskedName = if (name.length > 2) name.take(2) + "***" else name + "***"
             "$maskedName@$domain"
         } else {
-            "Registered Parent Email"
+            defaultEmailLabel
         }
     }
 
@@ -430,7 +440,7 @@ fun TvPinRecoveryDialog(
                                 onRequestOtp { code, _ ->
                                     simulatedCode = code
                                     step = 2
-                                    statusMessage = "Verification code generated and dispatched."
+                                    statusMessage = codeDispatchedMsg
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -600,7 +610,7 @@ fun TvPinRecoveryDialog(
                             listOf("1", "2", "3"),
                             listOf("4", "5", "6"),
                             listOf("7", "8", "9"),
-                            listOf("Reset", "0", "Save")
+                            listOf("Clear", "0", "Delete")
                         )
 
                         val pinLengthErrMsg = stringResource(R.string.recovery_err_pin_length)
@@ -621,19 +631,8 @@ fun TvPinRecoveryDialog(
                                                 .clickable {
                                                     errorMessage = ""
                                                     when (key) {
-                                                        "Reset" -> newPinText = ""
-                                                        "Save" -> {
-                                                            if (newPinText.length == 4) {
-                                                                onVerifyAndReset(
-                                                                    enteredOtp,
-                                                                    newPinText,
-                                                                    { onDismiss() },
-                                                                    { err -> errorMessage = err }
-                                                                )
-                                                            } else {
-                                                                errorMessage = pinLengthErrMsg
-                                                            }
-                                                        }
+                                                        "Clear" -> newPinText = ""
+                                                        "Delete" -> if (newPinText.isNotEmpty()) newPinText = newPinText.dropLast(1)
                                                         else -> {
                                                             if (newPinText.length < 4) newPinText += key
                                                         }
@@ -641,20 +640,58 @@ fun TvPinRecoveryDialog(
                                                 },
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val label = when (key) {
-                                                "Reset" -> stringResource(R.string.recovery_btn_reset)
-                                                "Save" -> stringResource(R.string.recovery_btn_save)
-                                                else -> key
+                                            if (key == "Delete") {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.Backspace,
+                                                    contentDescription = stringResource(R.string.pin_key_delete),
+                                                    tint = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = if (key == "Clear") stringResource(R.string.pin_key_clear) else key,
+                                                    color = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                                    fontWeight = FontWeight.Bold
+                                                )
                                             }
-                                            Text(
-                                                text = label,
-                                                color = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                                                fontWeight = FontWeight.Bold
-                                            )
                                         }
                                     }
                                 }
                             }
+                        }
+
+                        var isSaveFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                if (newPinText.length == 4) {
+                                    onVerifyAndReset(
+                                        enteredOtp,
+                                        newPinText,
+                                        { onDismiss() },
+                                        { err -> errorMessage = err }
+                                    )
+                                } else {
+                                    errorMessage = pinLengthErrMsg
+                                }
+                            },
+                            enabled = newPinText.length == 4,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSaveFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onFocusChanged { isSaveFocused = it.isFocused }
+                                .border(
+                                    width = if (isSaveFocused) 2.dp else 1.dp,
+                                    color = if (isSaveFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.recovery_btn_save),
+                                color = if (newPinText.length == 4) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -785,6 +822,199 @@ fun FullscreenLockOverlay(
                             fontWeight = FontWeight.Bold,
                             color = if (isBypassBtnFocused) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * TV App Options Dialog allowing parents/users to launch, toggle block, view info, or uninstall an app.
+ */
+@Composable
+fun TvAppOptionsDialog(
+    appName: String,
+    packageName: String,
+    icon: Drawable,
+    isBlocked: Boolean,
+    onDismiss: () -> Unit,
+    onOpenApp: () -> Unit,
+    onToggleBlock: () -> Unit,
+    onUninstallApp: () -> Unit,
+    onAppInfo: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .width(440.dp)
+                .wrapContentHeight()
+                .padding(16.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 10.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Header with App Icon and Names
+                androidx.compose.foundation.Image(
+                    bitmap = drawableToImageBitmap(icon),
+                    contentDescription = appName,
+                    modifier = Modifier.size(56.dp)
+                )
+
+                Text(
+                    text = appName,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = packageName,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Action 1: Open App
+                var isOpenFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = onOpenApp,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isOpenFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isOpenFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isOpenFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                            RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null, tint = if (isOpenFocused) Color.White else MaterialTheme.colorScheme.onSurface)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.app_dialog_open),
+                        color = if (isOpenFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Action 2: Block / Unblock Toggle
+                var isBlockFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = onToggleBlock,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isBlockFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isBlockFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isBlockFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                            RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(
+                        imageVector = if (isBlocked) Icons.Default.LockOpen else Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = if (isBlockFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (isBlocked) stringResource(R.string.app_dialog_unblock) else stringResource(R.string.app_dialog_block),
+                        color = if (isBlockFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Action 3: App Info / Settings
+                var isInfoFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = onAppInfo,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isInfoFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isInfoFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isInfoFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                            RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(Icons.Default.Info, contentDescription = null, tint = if (isInfoFocused) Color.White else MaterialTheme.colorScheme.onSurface)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.app_dialog_info),
+                        color = if (isInfoFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Action 4: Uninstall from TV
+                var isUninstallFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = onUninstallApp,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isUninstallFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isUninstallFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isUninstallFocused) Color.White else MaterialTheme.colorScheme.error.copy(alpha = 0.4f),
+                            RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = if (isUninstallFocused) Color.White else MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.app_dialog_uninstall),
+                        color = if (isUninstallFocused) Color.White else MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Action 5: Cancel / Dismiss
+                var isCancelFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isCancelFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isCancelFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
+                            RoundedCornerShape(8.dp)
+                        )
+                ) {
+                    Text(
+                        text = stringResource(R.string.btn_cancel),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                 }
             }

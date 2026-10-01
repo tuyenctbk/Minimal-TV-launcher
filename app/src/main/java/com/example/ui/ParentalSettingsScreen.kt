@@ -23,12 +23,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.widget.Toast
 import com.example.R
 import com.example.data.AppRestriction
 import com.example.data.LaunchLog
@@ -381,7 +383,7 @@ fun AppRestrictionsTab(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(filteredApps) { app ->
+            items(filteredApps, key = { it.packageName }) { app ->
                 var isRowFocused by remember { mutableStateOf(false) }
 
                 Row(
@@ -561,7 +563,7 @@ fun ScreentimeLimitsTab(
         )
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(limits) { minutes ->
+            items(limits, key = { it }) { minutes ->
                 var isItemFocused by remember { mutableStateOf(false) }
                 val isSelected = settings.dailyLimitMinutes == minutes
 
@@ -618,9 +620,15 @@ fun BedtimeScheduleTab(
     settings: ParentalSettings,
     viewModel: LauncherViewModel
 ) {
-    // Bedtime options: standard start hours and end hours
-    val startHours = listOf(18, 19, 20, 21, 22, 23) // PM hours
-    val endHours = listOf(5, 6, 7, 8, 9, 10)       // AM hours
+    // Bedtime options: standard start hours (5 PM to 1 AM) and end hours (4 AM to 11 AM)
+    val startHours = listOf(17, 18, 19, 20, 21, 22, 23, 0, 1)
+    val endHours = listOf(4, 5, 6, 7, 8, 9, 10, 11)
+
+    val displayStartHr = if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else (if (settings.bedtimeStartHour == 0) 12 else settings.bedtimeStartHour)
+    val startAmPm = if (settings.bedtimeStartHour in 12..23) "PM" else "AM"
+
+    val displayEndHr = if (settings.bedtimeEndHour > 12) settings.bedtimeEndHour - 12 else (if (settings.bedtimeEndHour == 0) 12 else settings.bedtimeEndHour)
+    val endAmPm = if (settings.bedtimeEndHour in 12..23) "PM" else "AM"
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
@@ -647,21 +655,24 @@ fun BedtimeScheduleTab(
             ) {
                 Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                 Text(
-                    text = stringResource(R.string.time_pm, if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else settings.bedtimeStartHour),
+                    text = "$displayStartHr:00 $startAmPm",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 )
 
-                LazyColumn(modifier = Modifier.height(180.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    items(startHours) { hr ->
+                LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    items(startHours, key = { it }) { hr ->
                         var isFocused by remember { mutableStateOf(false) }
                         val isSelected = settings.bedtimeStartHour == hr
                         val bg = if (isSelected) MaterialTheme.colorScheme.primary else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
                         val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
+                        val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                        val itemAmPm = if (hr in 12..23) "PM" else "AM"
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(36.dp)
+                                .height(38.dp)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(bg)
                                 .border(
@@ -674,7 +685,7 @@ fun BedtimeScheduleTab(
                                 .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = stringResource(R.string.time_pm_clock, hr), color = textCol, style = MaterialTheme.typography.bodyMedium)
+                            Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                         }
                     }
                 }
@@ -691,21 +702,24 @@ fun BedtimeScheduleTab(
             ) {
                 Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                 Text(
-                    text = stringResource(R.string.time_am, settings.bedtimeEndHour),
+                    text = "$displayEndHr:00 $endAmPm",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
                 )
 
-                LazyColumn(modifier = Modifier.height(180.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    items(endHours) { hr ->
+                LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    items(endHours, key = { it }) { hr ->
                         var isFocused by remember { mutableStateOf(false) }
                         val isSelected = settings.bedtimeEndHour == hr
                         val bg = if (isSelected) Color(0xFF10B981) else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
                         val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
+                        val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                        val itemAmPm = if (hr in 12..23) "PM" else "AM"
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(36.dp)
+                                .height(38.dp)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(bg)
                                 .border(
@@ -718,7 +732,7 @@ fun BedtimeScheduleTab(
                                 .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = stringResource(R.string.time_am_clock, hr), color = textCol, style = MaterialTheme.typography.bodyMedium)
+                            Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                         }
                     }
                 }
@@ -735,6 +749,7 @@ fun SupervisionLogsTab(
     recentLogs: List<LaunchLog>,
     viewModel: LauncherViewModel
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val usageTodayMin = if (uiState is LauncherUiState.Success) {
         val settings = (uiState as LauncherUiState.Success).settings
@@ -761,20 +776,48 @@ fun SupervisionLogsTab(
                 )
             }
 
-            var isClearFocused by remember { mutableStateOf(false) }
-            Button(
-                onClick = { viewModel.clearLaunchLogs() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
-                ),
-                modifier = Modifier
-                    .onFocusChanged { isClearFocused = it.isFocused }
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
-            ) {
-                Text(
-                    text = stringResource(R.string.btn_clear_all_logs),
-                    color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                var isResetUsageFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = {
+                        viewModel.resetTodayUsage()
+                        Toast.makeText(context, context.getString(R.string.toast_screentime_reset), Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isResetUsageFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    modifier = Modifier
+                        .onFocusChanged { isResetUsageFocused = it.isFocused }
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                ) {
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.btn_reset_screentime),
+                        color = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                var isClearFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = {
+                        viewModel.clearLaunchLogs()
+                        Toast.makeText(context, context.getString(R.string.toast_logs_cleared), Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    modifier = Modifier
+                        .onFocusChanged { isClearFocused = it.isFocused }
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                ) {
+                    Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.btn_clear_all_logs),
+                        color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 
@@ -894,7 +937,7 @@ fun SupervisionLogsTab(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                items(recentLogs) { log ->
+                items(recentLogs, key = { it.id }) { log ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -913,6 +956,25 @@ fun SupervisionLogsTab(
                             text = SimpleDateFormat("MMM dd, hh:mm:ss a", Locale.getDefault()).format(Date(log.timestamp)),
                             style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        var isDeleteLogFocused by remember { mutableStateOf(false) }
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteLaunchLog(log.id)
+                                Toast.makeText(context, context.getString(R.string.toast_log_deleted), Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .size(32.dp)
+                                .onFocusChanged { isDeleteLogFocused = it.isFocused }
+                                .background(if (isDeleteLogFocused) MaterialTheme.colorScheme.error else Color.Transparent, CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(R.string.btn_delete_log),
+                                tint = if (isDeleteLogFocused) Color.White else MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -1060,18 +1122,94 @@ fun PinConfigurationTab(
     var successMsg by remember { mutableStateOf("") }
     var errMsg by remember { mutableStateOf("") }
 
-    var recoveryEmailInput by remember { mutableStateOf(settings.recoveryEmail) }
+    var profileNameInput by remember { mutableStateOf(settings.profileName.ifEmpty { "Family" }) }
+    var profileSuccessMsg by remember { mutableStateOf("") }
+
+    var recoveryEmailInput by remember { mutableStateOf(settings.recoveryEmail.ifEmpty { "parent@home.com" }) }
     var emailSuccessMsg by remember { mutableStateOf("") }
     var simulatedOtpCode by remember { mutableStateOf("") }
 
     val pinSavedMsg = stringResource(R.string.pin_saved_success)
     val pinLengthMsg = stringResource(R.string.recovery_err_pin_length)
     val otpValidMsg = stringResource(R.string.recovery_code_generated_valid)
+    val profileSavedMsg = stringResource(R.string.toast_profile_saved)
+    val emailSavedMsg = stringResource(R.string.toast_email_saved)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+        // LIVING ROOM PROFILE NAME SECTION
+        item {
+            Text(
+                text = stringResource(R.string.profile_name_label),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            )
+            Text(
+                text = stringResource(R.string.profile_name_desc),
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = profileNameInput,
+                    onValueChange = {
+                        profileNameInput = it
+                        profileSuccessMsg = ""
+                    },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.weight(1f)
+                )
+
+                var isSaveProfileFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = {
+                        if (profileNameInput.isNotBlank()) {
+                            viewModel.setProfileName(profileNameInput.trim())
+                            profileSuccessMsg = profileSavedMsg
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSaveProfileFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .onFocusChanged { isSaveProfileFocused = it.isFocused }
+                        .border(1.dp, if (isSaveProfileFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_name_save),
+                        color = if (isSaveProfileFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            if (profileSuccessMsg.isNotEmpty()) {
+                Text(text = profileSuccessMsg, color = AccentGreen, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+        }
+
+        // PIN MANAGEMENT SECTION
         item {
             Text(
                 text = stringResource(R.string.pin_mgmt_title),
@@ -1149,7 +1287,7 @@ fun PinConfigurationTab(
                 listOf("1", "2", "3"),
                 listOf("4", "5", "6"),
                 listOf("7", "8", "9"),
-                listOf("Reset", "0", "Save")
+                listOf("Clear", "0", "Delete")
             )
 
             Column(
@@ -1175,16 +1313,8 @@ fun PinConfigurationTab(
                                         successMsg = ""
                                         errMsg = ""
                                         when (key) {
-                                            "Reset" -> pinText = ""
-                                            "Save" -> {
-                                                if (pinText.length == 4) {
-                                                    viewModel.setParentPin(pinText)
-                                                    successMsg = pinSavedMsg
-                                                    pinText = ""
-                                                } else {
-                                                    errMsg = pinLengthMsg
-                                                }
-                                            }
+                                            "Clear" -> pinText = ""
+                                            "Delete" -> if (pinText.isNotEmpty()) pinText = pinText.dropLast(1)
                                             else -> {
                                                 if (pinText.length < 4) {
                                                     pinText += key
@@ -1194,20 +1324,56 @@ fun PinConfigurationTab(
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
-                                val label = when (key) {
-                                    "Reset" -> stringResource(R.string.recovery_btn_reset)
-                                    "Save" -> stringResource(R.string.recovery_btn_save)
-                                    else -> key
+                                if (key == "Delete") {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Backspace,
+                                        contentDescription = stringResource(R.string.pin_key_delete),
+                                        tint = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        text = if (key == "Clear") stringResource(R.string.pin_key_clear) else key,
+                                        color = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
-                                Text(
-                                    text = label,
-                                    color = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
                             }
                         }
                     }
+                }
+
+                var isSavePinFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = {
+                        if (pinText.length == 4) {
+                            viewModel.setParentPin(pinText)
+                            successMsg = pinSavedMsg
+                            pinText = ""
+                        } else {
+                            errMsg = pinLengthMsg
+                        }
+                    },
+                    enabled = pinText.length == 4,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSavePinFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isSavePinFocused = it.isFocused }
+                        .border(
+                            1.dp,
+                            if (isSavePinFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                            RoundedCornerShape(8.dp)
+                        )
+                ) {
+                    Text(
+                        text = stringResource(R.string.recovery_btn_save),
+                        color = if (pinText.length == 4) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -1240,27 +1406,61 @@ fun PinConfigurationTab(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    Text(
+                        text = stringResource(R.string.recovery_registered_address_label),
+                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = recoveryEmailInput,
+                            onValueChange = {
+                                recoveryEmailInput = it
+                                emailSuccessMsg = ""
+                            },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        var isSaveEmailFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                if (recoveryEmailInput.contains("@")) {
+                                    viewModel.setRecoveryEmail(recoveryEmailInput.trim())
+                                    emailSuccessMsg = emailSavedMsg
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSaveEmailFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .onFocusChanged { isSaveEmailFocused = it.isFocused }
+                                .border(1.dp, if (isSaveEmailFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        ) {
+                            Text(
+                                text = stringResource(R.string.recovery_email_save),
+                                color = if (isSaveEmailFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.recovery_registered_address_label),
-                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                            )
-                            Text(
-                                text = settings.recoveryEmail.ifEmpty { "tuyenctbk@gmail.com" },
-                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                            )
-                        }
-
                         var isTestSendFocused by remember { mutableStateOf(false) }
                         Button(
                             onClick = {

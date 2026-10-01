@@ -1,7 +1,10 @@
 package com.example.ui
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -69,6 +72,7 @@ fun LauncherHomeScreen(
     var currentTime by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    var selectedAppForOptions by remember { mutableStateOf<LauncherAppItem?>(null) }
     LaunchedEffect(Unit) {
         while (true) {
             currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
@@ -139,7 +143,9 @@ fun LauncherHomeScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                // Rounded Avatar with initial L
+                                val profileName = settings.profileName.ifEmpty { "Family" }
+                                val initialLetter = profileName.firstOrNull()?.uppercaseChar()?.toString() ?: "F"
+                                // Rounded Avatar with initial letter
                                 Box(
                                     modifier = Modifier
                                         .size(44.dp)
@@ -149,7 +155,7 @@ fun LauncherHomeScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "L",
+                                        text = initialLetter,
                                         style = MaterialTheme.typography.titleLarge.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF818CF8)
@@ -158,7 +164,7 @@ fun LauncherHomeScreen(
                                 }
                                 Column {
                                     Text(
-                                        text = stringResource(R.string.greeting_user),
+                                        text = stringResource(R.string.greeting_user, profileName),
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onSurface
@@ -393,12 +399,15 @@ fun LauncherHomeScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    val bedtimeDisplayHour = if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else (if (settings.bedtimeStartHour == 0) 12 else settings.bedtimeStartHour)
+                                    val bedtimeAmPm = if (settings.bedtimeStartHour >= 12) "PM" else "AM"
+                                    val bedtimeFormatted = String.format(Locale.getDefault(), "%d:%02d %s", bedtimeDisplayHour, settings.bedtimeStartMinute, bedtimeAmPm)
+
                                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                         Text(
                                             text = stringResource(
                                                 R.string.next_break_bedtime,
-                                                settings.bedtimeStartHour,
-                                                settings.bedtimeStartMinute
+                                                bedtimeFormatted
                                             ),
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -447,7 +456,8 @@ fun LauncherHomeScreen(
                             (24 * 60 - currentTotalMins) + bedtimeStartTotalMins
                         }
 
-                        val showBedtimeWarning = minutesUntilBedtime in 1..15 && !isLocked
+                        val isBedtimeNow = viewModel.isBedtimeActive(settings)
+                        val showBedtimeWarning = !isBedtimeNow && !isLocked && !isBypassed && minutesUntilBedtime in 1..15
 
                         if (showBedtimeWarning) {
                             Card(
@@ -474,8 +484,7 @@ fun LauncherHomeScreen(
                                         Text(
                                             text = stringResource(
                                                 R.string.bedtime_warning_title,
-                                                minutesUntilBedtime,
-                                                if (minutesUntilBedtime > 1) "s" else ""
+                                                minutesUntilBedtime
                                             ),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontWeight = FontWeight.Bold,
@@ -688,7 +697,7 @@ fun LauncherHomeScreen(
                                     .fillMaxWidth()
                                     .weight(1f)
                             ) {
-                                items(visibleApps) { app ->
+                                items(visibleApps, key = { it.packageName }) { app ->
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -705,6 +714,9 @@ fun LauncherHomeScreen(
                                                 } else {
                                                     launchApp(context, app, viewModel)
                                                 }
+                                            },
+                                            onLongClick = {
+                                                selectedAppForOptions = app
                                             },
                                             modifier = Modifier
                                                 .size(110.dp),
@@ -802,7 +814,7 @@ fun LauncherHomeScreen(
 
         // 5. TV PIN Recovery Dialog via Registered Email
         if (viewModel.showPinRecoveryDialog) {
-            val registeredEmail = (uiState as? LauncherUiState.Success)?.settings?.recoveryEmail?.ifEmpty { "tuyenctbk@gmail.com" } ?: "tuyenctbk@gmail.com"
+            val registeredEmail = (uiState as? LauncherUiState.Success)?.settings?.recoveryEmail?.ifEmpty { "parent@home.com" } ?: "parent@home.com"
             TvPinRecoveryDialog(
                 registeredEmail = registeredEmail,
                 onDismiss = {
@@ -824,6 +836,63 @@ fun LauncherHomeScreen(
                             onError(context.getString(R.string.recovery_err_invalid_otp))
                         }
                     )
+                }
+            )
+        }
+
+        // 6. App Options Dialog (Open, Block/Unblock, Uninstall, Info)
+        selectedAppForOptions?.let { app ->
+            TvAppOptionsDialog(
+                appName = app.appName,
+                packageName = app.packageName,
+                icon = app.icon,
+                isBlocked = app.isBlocked,
+                onDismiss = { selectedAppForOptions = null },
+                onOpenApp = {
+                    val targetApp = app
+                    selectedAppForOptions = null
+                    if (targetApp.isBlocked && !isBypassed) {
+                        viewModel.pinPromptSuccessCallback = {
+                            launchApp(context, targetApp, viewModel)
+                        }
+                        viewModel.showPinPromptForSettings = true
+                    } else {
+                        launchApp(context, targetApp, viewModel)
+                    }
+                },
+                onToggleBlock = {
+                    val targetApp = app
+                    selectedAppForOptions = null
+                    viewModel.pinPromptSuccessCallback = {
+                        viewModel.toggleAppBlocked(targetApp.packageName, !targetApp.isBlocked)
+                    }
+                    viewModel.showPinPromptForSettings = true
+                },
+                onUninstallApp = {
+                    val pkg = app.packageName
+                    selectedAppForOptions = null
+                    try {
+                        val uninstallIntent = Intent(Intent.ACTION_DELETE).apply {
+                            data = Uri.parse("package:$pkg")
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(uninstallIntent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, context.getString(R.string.toast_launch_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onAppInfo = {
+                    val pkg = app.packageName
+                    selectedAppForOptions = null
+                    try {
+                        val infoIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.parse("package:$pkg")
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(infoIntent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, context.getString(R.string.toast_launch_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
         }
@@ -931,14 +1000,16 @@ private fun launchApp(
     viewModel: LauncherViewModel
 ) {
     try {
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(app.packageName)
-        if (launchIntent != null) {
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(launchIntent)
-            viewModel.logAppLaunch(app.packageName, app.appName)
-        } else {
-            Toast.makeText(context, context.getString(R.string.toast_could_not_open_app, app.appName), Toast.LENGTH_SHORT).show()
-        }
+        val pm = context.packageManager
+        val launchIntent = pm.getLeanbackLaunchIntentForPackage(app.packageName)
+            ?: pm.getLaunchIntentForPackage(app.packageName)
+            ?: Intent(Intent.ACTION_MAIN).apply {
+                component = ComponentName(app.packageName, app.activityName)
+                addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+            }
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(launchIntent)
+        viewModel.logAppLaunch(app.packageName, app.appName)
     } catch (e: Exception) {
         Toast.makeText(context, context.getString(R.string.toast_launch_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
     }

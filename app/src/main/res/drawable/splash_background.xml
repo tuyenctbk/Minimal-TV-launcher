@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Cinematic Dark Gradient Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:startColor="#090D16"
+                android:centerColor="#0F172A"
+                android:endColor="#1E1B4B"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- Centered TV Launcher Emblem -->
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:gravity="center">
+        <vector
+            android:width="120dp"
+            android:height="120dp"
+            android:viewportWidth="120"
+            android:viewportHeight="120">
+            <!-- Ambient Glow -->
+            <path
+                android:fillColor="#256366F1"
+                android:pathData="M60,60m-50,0a50,50 0 1,1 100,0a50,50 0 1,1 -100,0" />
+            <!-- TV Monitor Outer Frame -->
+            <path
+                android:fillColor="#6366F1"
+                android:pathData="M25,24 h70 a8,8 0 0,1 8,8 v46 a8,8 0 0,1 -8,8 h-70 a8,8 0 0,1 -8,-8 v-46 a8,8 0 0,1 8,-8 z" />
+            <!-- TV Screen Inner Deep Glass Canvas -->
+            <path
+                android:fillColor="#0B0F19"
+                android:pathData="M29,28 h62 a4,4 0 0,1 4,4 v38 a4,4 0 0,1 -4,4 h-62 a4,4 0 0,1 -4,-4 v-38 a4,4 0 0,1 4,-4 z" />
+            <!-- Stand Pillar -->
+            <path
+                android:fillColor="#4F46E5"
+                android:pathData="M56,86 h8 v8 h-8 z" />
+            <!-- Stand Base -->
+            <path
+                android:fillColor="#818CF8"
+                android:pathData="M44,94 h32 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-32 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 z" />
+            <!-- Shield in Screen -->
+            <path
+                android:fillColor="#38BDF8"
+                android:pathData="M60,34 C69,34 74,38 74,38 C74,52 65,60 60,64 C55,60 46,52 46,38 C46,38 51,34 60,34 Z" />
+            <!-- Play Arrow -->
+            <path
+                android:fillColor="#FFFFFF"
+                android:pathData="M57,43 L66,49 L57,55 Z" />
+        </vector>
+    </item>
+</layer-list>

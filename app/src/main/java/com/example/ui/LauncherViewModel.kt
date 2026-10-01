@@ -59,6 +59,9 @@ class LauncherViewModel(
     private val _isParentBypassed = MutableStateFlow(false)
     val isParentBypassed: StateFlow<Boolean> = _isParentBypassed.asStateFlow()
 
+    // Refresh trigger to force UI recalculation when apps are installed/uninstalled/deleted
+    private val _refreshTrigger = MutableStateFlow(0)
+
     // Current category filter on main screen
     var selectedCategory by mutableStateOf("All")
 
@@ -88,8 +91,9 @@ class LauncherViewModel(
                 repository.settingsFlow,
                 repository.restrictionsFlow,
                 repository.recentLogsFlow,
-                _isParentBypassed
-            ) { settingsOpt, restrictions, logs, bypassed ->
+                _isParentBypassed,
+                _refreshTrigger
+            ) { settingsOpt, restrictions, logs, bypassed, _ ->
                 val settings = settingsOpt ?: repository.getSettings()
                 _themeMode.value = settings.themeMode
                 val fullApps = repository.getInstalledAppDetails()
@@ -262,6 +266,7 @@ class LauncherViewModel(
     fun grantBonusScreentime(minutes: Int) {
         viewModelScope.launch {
             repository.addBonusScreentime(minutes)
+            _refreshTrigger.value = _refreshTrigger.value + 1
         }
     }
 
@@ -274,13 +279,48 @@ class LauncherViewModel(
         showParentalSettings = false
     }
 
-    fun clearLaunchLogs() {
+    fun refreshApps() {
         viewModelScope.launch {
-            repository.clearLogs()
+            repository.syncInstalledApps()
+            _refreshTrigger.value = _refreshTrigger.value + 1
         }
     }
 
-    private fun isBedtimeActive(settings: ParentalSettings): Boolean {
+    fun setProfileName(name: String) {
+        viewModelScope.launch {
+            repository.setProfileName(name)
+        }
+    }
+
+    fun clearLaunchLogs() {
+        viewModelScope.launch {
+            repository.clearLogs()
+            _refreshTrigger.value = _refreshTrigger.value + 1
+        }
+    }
+
+    fun deleteLaunchLog(logId: Int) {
+        viewModelScope.launch {
+            repository.deleteLog(logId)
+            _refreshTrigger.value = _refreshTrigger.value + 1
+        }
+    }
+
+    fun resetTodayUsage() {
+        viewModelScope.launch {
+            repository.resetTodayUsage()
+            _refreshTrigger.value = _refreshTrigger.value + 1
+        }
+    }
+
+    fun deleteAppRestriction(packageName: String) {
+        viewModelScope.launch {
+            repository.deleteAppRestriction(packageName)
+            _refreshTrigger.value = _refreshTrigger.value + 1
+        }
+    }
+
+    fun isBedtimeActive(settings: ParentalSettings): Boolean {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)

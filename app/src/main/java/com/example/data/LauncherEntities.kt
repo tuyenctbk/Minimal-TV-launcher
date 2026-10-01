@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Entity(tableName = "parental_settings")
 data class ParentalSettings(
     @PrimaryKey val id: Int = 0,
+    val profileName: String = "Family",
     val pin: String = "0000",
     val recoveryEmail: String = "parent@home.com",
     val dailyLimitMinutes: Int = 60, // 0 for unlimited
@@ -79,6 +80,18 @@ interface LauncherDao {
     @Query("UPDATE app_restrictions SET launchCount = launchCount + 1 WHERE packageName = :packageName")
     suspend fun incrementLaunchCount(packageName: String)
 
+    @Query("UPDATE app_restrictions SET launchCount = 0")
+    suspend fun resetAllLaunchCounts()
+
+    @Query("DELETE FROM app_restrictions WHERE packageName = :packageName")
+    suspend fun deleteAppRestriction(packageName: String)
+
+    @Query("DELETE FROM app_restrictions WHERE packageName IN (:packageNames)")
+    suspend fun deleteAppRestrictions(packageNames: List<String>)
+
+    @Query("UPDATE parental_settings SET usageTodayMs = 0 WHERE id = 0")
+    suspend fun resetTodayUsage()
+
     // Launch Logs
     @Query("SELECT * FROM launch_logs ORDER BY timestamp DESC LIMIT 50")
     fun getRecentLogsFlow(): Flow<List<LaunchLog>>
@@ -86,11 +99,14 @@ interface LauncherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLaunchLog(log: LaunchLog)
 
+    @Query("DELETE FROM launch_logs WHERE id = :logId")
+    suspend fun deleteLaunchLog(logId: Int)
+
     @Query("DELETE FROM launch_logs")
     suspend fun clearLaunchLogs()
 }
 
-@Database(entities = [ParentalSettings::class, AppRestriction::class, LaunchLog::class], version = 2, exportSchema = false)
+@Database(entities = [ParentalSettings::class, AppRestriction::class, LaunchLog::class], version = 3, exportSchema = false)
 abstract class LauncherDatabase : RoomDatabase() {
     abstract fun launcherDao(): LauncherDao
 }

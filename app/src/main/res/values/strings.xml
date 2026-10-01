@@ -2,7 +2,7 @@
     <string name="app_name">Minimal TV Launcher</string>
 
     <!-- Top Status Bar -->
-    <string name="greeting_user">Hi, Leo</string>
+    <string name="greeting_user">Hi, %1$s</string>
     <string name="profile_parent">Parent Profile</string>
     <string name="profile_kid">Kid Profile</string>
     <string name="status_online">Online</string>
@@ -20,14 +20,14 @@
     <string name="remaining_mins_short">%1$dm Remaining</string>
     <string name="remaining_secs_short">%1$ds Remaining</string>
     <string name="toast_added_screentime">Added +15 mins Screen Time!</string>
-    <string name="next_break_bedtime">Next Break: Bedtime at %1$02d:%2$02d</string>
+    <string name="next_break_bedtime">Next Break: Bedtime at %1$s</string>
     <string name="managed_by_parental_dashboard">Managed by Parental Dashboard</string>
     <string name="btn_ask_more_time">ASK MORE (+15M)</string>
     <string name="supervisor_mode">Supervisor Mode</string>
     <string name="remaining_screentime">Remaining Screentime</string>
 
     <!-- Bedtime Warning Banner -->
-    <string name="bedtime_warning_title">Bedtime starts in %1$d minute%2$s!</string>
+    <string name="bedtime_warning_title">Bedtime starts in %1$d mins!</string>
     <string name="bedtime_warning_subtitle">Please finish up what you\'re doing. TV will rest soon.</string>
     <string name="bedtime_warning_cd">Bedtime warning</string>
 
@@ -156,4 +156,25 @@
     <string name="recovery_simulated_dispatch_title">Simulated Living Room Email Dispatch:</string>
     <string name="recovery_simulated_code_label">6-Digit One-Time Code: %1$s (Expiry: 10 mins)</string>
     <string name="recovery_simulated_help">You can enter this code in the \'Forgot PIN? Reset via Email\' recovery dialog to reset your parental PIN.</string>
+
+    <!-- Additional UI & UX Features -->
+    <string name="btn_delete_log">Delete</string>
+    <string name="btn_reset_screentime">Reset Today\'s Screentime</string>
+    <string name="dialog_reset_screentime_title">Reset Today\'s Screen Time?</string>
+    <string name="dialog_reset_screentime_desc">This resets active screen time usage for today back to 0 minutes.</string>
+    <string name="toast_screentime_reset">Screen time reset for today!</string>
+    <string name="toast_log_deleted">Activity log removed.</string>
+    <string name="toast_logs_cleared">All activity logs cleared!</string>
+    <string name="app_dialog_title">App Options</string>
+    <string name="app_dialog_open">Open App</string>
+    <string name="app_dialog_block">Block App in Kids Mode</string>
+    <string name="app_dialog_unblock">Unblock App in Kids Mode</string>
+    <string name="app_dialog_uninstall">Uninstall from TV</string>
+    <string name="app_dialog_info">App Info / Settings</string>
+    <string name="profile_name_label">Living Room Profile Name</string>
+    <string name="profile_name_desc">Name shown in the top launcher status bar (e.g. Family, Alex, Kids).</string>
+    <string name="profile_name_save">Save Profile Name</string>
+    <string name="recovery_email_save">Save Recovery Email</string>
+    <string name="toast_profile_saved">Profile name updated successfully!</string>
+    <string name="toast_email_saved">Recovery email updated successfully!</string>
 </resources>

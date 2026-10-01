@@ -1,5 +1,9 @@
 package com.example
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var database: LauncherDatabase
     private lateinit var repository: LauncherRepository
     private lateinit var viewModel: LauncherViewModel
+    private var packageChangeReceiver: BroadcastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +59,24 @@ class MainActivity : ComponentActivity() {
 
         viewModel = ViewModelProvider(this, factory)[LauncherViewModel::class.java]
 
+        // 3. Register package receiver to immediately detect newly installed or deleted apps
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (::viewModel.isInitialized) {
+                    viewModel.refreshApps()
+                }
+            }
+        }
+        packageChangeReceiver = receiver
+        registerReceiver(receiver, filter)
+
         setContent {
             val themeMode by viewModel.themeMode.collectAsState()
             MyApplicationTheme(darkTheme = themeMode != "LIGHT") {
@@ -73,7 +96,18 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Refresh installed apps and reset active tracking state if bypassed
         if (::viewModel.isInitialized) {
+            viewModel.refreshApps()
             viewModel.lockParentSession()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        packageChangeReceiver?.let {
+            try {
+                unregisterReceiver(it)
+            } catch (_: Exception) {
+            }
         }
     }
 }
