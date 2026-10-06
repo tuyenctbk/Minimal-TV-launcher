@@ -12,6 +12,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -136,7 +138,8 @@ fun TvPinPadDialog(
     ) {
         Surface(
             modifier = Modifier
-                .width(440.dp)
+                .fillMaxWidth(0.92f)
+                .widthIn(max = 440.dp)
                 .wrapContentHeight()
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
@@ -145,8 +148,9 @@ fun TvPinPadDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
+                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -390,7 +394,8 @@ fun TvPinRecoveryDialog(
     ) {
         Surface(
             modifier = Modifier
-                .width(480.dp)
+                .fillMaxWidth(0.92f)
+                .widthIn(max = 480.dp)
                 .wrapContentHeight()
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
@@ -399,8 +404,9 @@ fun TvPinRecoveryDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
+                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -741,8 +747,10 @@ fun FullscreenLockOverlay(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            modifier = Modifier.padding(40.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             val icon = if (reason == LockReason.BEDTIME) Icons.Default.Bedtime else Icons.Default.Timer
             val title = if (reason == LockReason.BEDTIME) stringResource(R.string.lock_bedtime_title) else stringResource(R.string.lock_screentime_title)
@@ -850,7 +858,8 @@ fun TvAppOptionsDialog(
     ) {
         Surface(
             modifier = Modifier
-                .width(440.dp)
+                .fillMaxWidth(0.92f)
+                .widthIn(max = 440.dp)
                 .wrapContentHeight()
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
@@ -859,8 +868,9 @@ fun TvAppOptionsDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
+                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {

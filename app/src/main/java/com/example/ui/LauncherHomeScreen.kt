@@ -13,6 +13,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -124,20 +126,25 @@ fun LauncherHomeScreen(
                 }
                 // 3. Main television dashboard
                 else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 32.dp, vertical = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // TOP STATUS BAR (Clock, Profile avatar, Screentime Tracker, settings cog)
-                        Row(
+                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                        val isCompact = maxWidth < 600.dp
+                        val horizontalPad = if (isCompact) 16.dp else 32.dp
+                        val verticalPad = if (isCompact) 16.dp else 24.dp
+
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .fillMaxSize()
+                                .padding(horizontal = horizontalPad, vertical = verticalPad),
+                            verticalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp)
                         ) {
+                            // TOP STATUS BAR (Clock, Profile avatar, Screentime Tracker, settings cog)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(if (isCompact) 64.dp else 80.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
                             // Profile Avatar & Info
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -184,36 +191,38 @@ fun LauncherHomeScreen(
                             // Right Side: Online Status, Clock, Theme Toggle & Settings
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 16.dp)
                             ) {
                                 // Online Status Pill
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
-                                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                ) {
-                                    Box(
+                                if (!isCompact) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                                         modifier = Modifier
-                                            .size(6.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0xFF10B981)) // emerald-500
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.status_online),
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                            fontWeight = FontWeight.Medium
+                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(6.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFF10B981)) // emerald-500
                                         )
-                                    )
+                                        Text(
+                                            text = stringResource(R.string.status_online),
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        )
+                                    }
                                 }
 
                                 // Clock Text
                                 Text(
                                     text = currentTime,
-                                    style = MaterialTheme.typography.titleLarge.copy(
+                                    style = (if (isCompact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge).copy(
                                         fontWeight = FontWeight.Light,
                                         color = MaterialTheme.colorScheme.onBackground,
                                         letterSpacing = (-0.5).sp
@@ -549,6 +558,7 @@ fun LauncherHomeScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
                                 .padding(vertical = 4.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -690,9 +700,9 @@ fun LauncherHomeScreen(
                         } else {
                             // APPLICATIONS GRID (Adaptive, horizontal scrolling layout optimized for TV viewport)
                             LazyVerticalGrid(
-                                columns = GridCells.Adaptive(minSize = 140.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                columns = GridCells.Adaptive(minSize = if (isCompact) 105.dp else 140.dp),
+                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -701,7 +711,7 @@ fun LauncherHomeScreen(
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        modifier = Modifier.width(140.dp)
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
                                         TvFocusableCard(
                                             onClick = {
@@ -719,7 +729,7 @@ fun LauncherHomeScreen(
                                                 selectedAppForOptions = app
                                             },
                                             modifier = Modifier
-                                                .size(110.dp),
+                                                .size(if (isCompact) 88.dp else 110.dp),
                                             testTag = "app_item_${app.packageName}"
                                         ) { isFocused ->
                                             Column(
@@ -730,7 +740,7 @@ fun LauncherHomeScreen(
                                                 Image(
                                                     bitmap = drawableToImageBitmap(app.icon),
                                                     contentDescription = app.appName,
-                                                    modifier = Modifier.size(52.dp)
+                                                    modifier = Modifier.size(if (isCompact) 42.dp else 52.dp)
                                                 )
                                             }
 
@@ -780,6 +790,7 @@ fun LauncherHomeScreen(
                             }
                         }
                     }
+                }
                 }
             }
         }
