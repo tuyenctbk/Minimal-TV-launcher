@@ -128,6 +128,7 @@ fun LauncherHomeScreen(
                 else {
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         val isCompact = maxWidth < 600.dp
+                        val isWideEnoughForClock = maxWidth >= 360.dp
                         val horizontalPad = if (isCompact) 16.dp else 32.dp
                         val verticalPad = if (isCompact) 16.dp else 24.dp
 
@@ -148,14 +149,15 @@ fun LauncherHomeScreen(
                             // Profile Avatar & Info
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                modifier = Modifier.weight(1f, fill = false)
                             ) {
                                 val profileName = settings.profileName.ifEmpty { "Family" }
                                 val initialLetter = profileName.firstOrNull()?.uppercaseChar()?.toString() ?: "F"
                                 // Rounded Avatar with initial letter
                                 Box(
                                     modifier = Modifier
-                                        .size(44.dp)
+                                        .size(if (isCompact) 38.dp else 44.dp)
                                         .clip(CircleShape)
                                         .background(Color(0xFF6366F1).copy(alpha = 0.2f))
                                         .border(1.dp, Color(0xFF6366F1).copy(alpha = 0.3f), CircleShape),
@@ -163,19 +165,21 @@ fun LauncherHomeScreen(
                                 ) {
                                     Text(
                                         text = initialLetter,
-                                        style = MaterialTheme.typography.titleLarge.copy(
+                                        style = (if (isCompact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge).copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF818CF8)
                                         )
                                     )
                                 }
-                                Column {
+                                Column(modifier = Modifier.weight(1f, fill = false)) {
                                     Text(
                                         text = stringResource(R.string.greeting_user, profileName),
-                                        style = MaterialTheme.typography.titleMedium.copy(
+                                        style = (if (isCompact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium).copy(
                                             fontWeight = FontWeight.SemiBold,
                                             color = MaterialTheme.colorScheme.onSurface
-                                        )
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
                                         text = if (isBypassed) stringResource(R.string.profile_parent) else stringResource(R.string.profile_kid),
@@ -183,7 +187,9 @@ fun LauncherHomeScreen(
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                             fontWeight = FontWeight.Bold,
                                             letterSpacing = 0.5.sp
-                                        )
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -191,7 +197,7 @@ fun LauncherHomeScreen(
                             // Right Side: Online Status, Clock, Theme Toggle & Settings
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 16.dp)
+                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 14.dp)
                             ) {
                                 // Online Status Pill
                                 if (!isCompact) {
@@ -219,15 +225,17 @@ fun LauncherHomeScreen(
                                     }
                                 }
 
-                                // Clock Text
-                                Text(
-                                    text = currentTime,
-                                    style = (if (isCompact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge).copy(
-                                        fontWeight = FontWeight.Light,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        letterSpacing = (-0.5).sp
+                                // Clock Text (hidden only on extremely narrow screen under 360dp to preserve touch buttons)
+                                if (isWideEnoughForClock || !isCompact) {
+                                    Text(
+                                        text = currentTime,
+                                        style = (if (isCompact) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge).copy(
+                                            fontWeight = FontWeight.Light,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            letterSpacing = (-0.5).sp
+                                        )
                                     )
-                                )
+                                }
 
                                 // Theme Toggle Button (Light / Dark Mode switch for living room ambient conditions)
                                 var isThemeBtnFocused by remember { mutableStateOf(false) }
@@ -412,7 +420,10 @@ fun LauncherHomeScreen(
                                     val bedtimeAmPm = if (settings.bedtimeStartHour >= 12) "PM" else "AM"
                                     val bedtimeFormatted = String.format(Locale.getDefault(), "%d:%02d %s", bedtimeDisplayHour, settings.bedtimeStartMinute, bedtimeAmPm)
 
-                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Column(
+                                        modifier = Modifier.weight(1f, fill = false),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
                                         Text(
                                             text = stringResource(
                                                 R.string.next_break_bedtime,
@@ -421,14 +432,18 @@ fun LauncherHomeScreen(
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                                 fontWeight = FontWeight.Medium
-                                            )
+                                            ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                         Text(
                                             text = stringResource(R.string.managed_by_parental_dashboard),
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
                                                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                                            )
+                                            ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
 
@@ -698,11 +713,11 @@ fun LauncherHomeScreen(
                                 }
                             }
                         } else {
-                            // APPLICATIONS GRID (Adaptive, horizontal scrolling layout optimized for TV viewport)
+                            // APPLICATIONS GRID (Adaptive grid layout with TV focus and mobile touch support)
                             LazyVerticalGrid(
-                                columns = GridCells.Adaptive(minSize = if (isCompact) 105.dp else 140.dp),
-                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp),
+                                columns = GridCells.Adaptive(minSize = if (isCompact) 92.dp else 125.dp),
+                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 10.dp else 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(if (isCompact) 10.dp else 16.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -710,7 +725,7 @@ fun LauncherHomeScreen(
                                 items(visibleApps, key = { it.packageName }) { app ->
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         TvFocusableCard(
@@ -729,7 +744,7 @@ fun LauncherHomeScreen(
                                                 selectedAppForOptions = app
                                             },
                                             modifier = Modifier
-                                                .size(if (isCompact) 88.dp else 110.dp),
+                                                .size(if (isCompact) 80.dp else 105.dp),
                                             testTag = "app_item_${app.packageName}"
                                         ) { isFocused ->
                                             Column(
@@ -740,7 +755,7 @@ fun LauncherHomeScreen(
                                                 Image(
                                                     bitmap = drawableToImageBitmap(app.icon),
                                                     contentDescription = app.appName,
-                                                    modifier = Modifier.size(if (isCompact) 42.dp else 52.dp)
+                                                    modifier = Modifier.size(if (isCompact) 38.dp else 50.dp)
                                                 )
                                             }
 

@@ -1,5 +1,6 @@
 package com.example.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -7,6 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,6 +49,10 @@ fun ParentalSettingsScreen(
     viewModel: LauncherViewModel,
     onCloseSettings: () -> Unit
 ) {
+    BackHandler {
+        onCloseSettings()
+    }
+
     var activeTab by remember { mutableStateOf(ParentalTab.APP_RESTRICTIONS) }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -56,151 +64,298 @@ fun ParentalSettingsScreen(
         val restrictions = successState.restrictions
         val apps = successState.apps
 
-        Row(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // LEFT COLUMN: Navigation Tabs
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(280.dp)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
-                    )
-                    .padding(vertical = 24.dp, horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Header
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 16.dp)
+            val isCompact = maxWidth < 720.dp
+
+            if (isCompact) {
+                // Adaptive layout for Compact screens / Phone Portrait / Narrow windows
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Shield,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.settings_header_title),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
-
-                // Tabs List
-                ParentalTab.entries.forEach { tab ->
-                    var isTabFocused by remember { mutableStateOf(false) }
-                    val isSelected = activeTab == tab
-                    val tabBg = when {
-                        isSelected -> MaterialTheme.colorScheme.primary
-                        isTabFocused -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
-                        else -> Color.Transparent
-                    }
-                    val textColor = when {
-                        isSelected -> Color.White
-                        isTabFocused -> MaterialTheme.colorScheme.primary
-                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    }
-
+                    // TOP BAR
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(tabBg)
-                            .onFocusChanged { isTabFocused = it.isFocused }
-                            .focusable()
-                            .clickable { activeTab = tab }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .background(MaterialTheme.colorScheme.surface)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            imageVector = tab.icon,
-                            contentDescription = null,
-                            tint = textColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(tab.titleRes),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = textColor
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Shield,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.settings_header_title),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        // Close button with minimum touch target of 48.dp
+                        IconButton(
+                            onClick = onCloseSettings,
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.btn_exit_settings),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    // HORIZONTAL SCROLLABLE TABS
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ParentalTab.entries.forEach { tab ->
+                            var isTabFocused by remember { mutableStateOf(false) }
+                            val isSelected = activeTab == tab
+                            val tabBg = when {
+                                isSelected -> MaterialTheme.colorScheme.primary
+                                isTabFocused -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            }
+                            val textColor = when {
+                                isSelected -> Color.White
+                                isTabFocused -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(tabBg)
+                                    .border(
+                                        width = if (isTabFocused || isSelected) 1.5.dp else 1.dp,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else if (isTabFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                                    .onFocusChanged { isTabFocused = it.isFocused }
+                                    .focusable()
+                                    .clickable { activeTab = tab }
+                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = null,
+                                    tint = textColor,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    text = stringResource(tab.titleRes),
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                        color = textColor
+                                    ),
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                    )
+
+                    // CONTENT AREA
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        AnimatedContent(targetState = activeTab) { tab ->
+                            when (tab) {
+                                ParentalTab.APP_RESTRICTIONS -> AppRestrictionsTab(apps = apps, viewModel = viewModel)
+                                ParentalTab.SCREENTIME_LIMIT -> ScreentimeLimitsTab(settings = settings, viewModel = viewModel)
+                                ParentalTab.BEDTIME_SCHEDULE -> BedtimeScheduleTab(settings = settings, viewModel = viewModel)
+                                ParentalTab.THEME_APPEARANCE -> ThemeAppearanceTab(settings = settings, viewModel = viewModel)
+                                ParentalTab.SUPERVISION_LOGS -> SupervisionLogsTab(recentLogs = recentLogs, viewModel = viewModel)
+                                ParentalTab.PIN_CONFIGURATION -> PinConfigurationTab(settings = settings, viewModel = viewModel)
+                            }
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Exit settings tab button
-                var isExitFocused by remember { mutableStateOf(false) }
+            } else {
+                // Expanded / Landscape / Tablet / TV Master-Detail Layout
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isExitFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                        .onFocusChanged { isExitFocused = it.isFocused }
-                        .focusable()
-                        .clickable { onCloseSettings() }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        tint = if (isExitFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.btn_exit_settings),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (isExitFocused) Color.White else MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
-            }
+                    // LEFT COLUMN: Navigation Tabs
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(260.dp)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                            )
+                            .padding(vertical = 24.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Header
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Shield,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.settings_header_title),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        }
 
-            // RIGHT COLUMN: Content Panel matching selected tab
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .padding(24.dp)
-            ) {
-                AnimatedContent(targetState = activeTab) { tab ->
-                    when (tab) {
-                        ParentalTab.APP_RESTRICTIONS -> {
-                            AppRestrictionsTab(apps = apps, viewModel = viewModel)
+                        // Tabs List
+                        ParentalTab.entries.forEach { tab ->
+                            var isTabFocused by remember { mutableStateOf(false) }
+                            val isSelected = activeTab == tab
+                            val tabBg = when {
+                                isSelected -> MaterialTheme.colorScheme.primary
+                                isTabFocused -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                else -> Color.Transparent
+                            }
+                            val textColor = when {
+                                isSelected -> Color.White
+                                isTabFocused -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(tabBg)
+                                    .onFocusChanged { isTabFocused = it.isFocused }
+                                    .focusable()
+                                    .clickable { activeTab = tab }
+                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = tab.icon,
+                                    contentDescription = null,
+                                    tint = textColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = stringResource(tab.titleRes),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = textColor
+                                    ),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
-                        ParentalTab.SCREENTIME_LIMIT -> {
-                            ScreentimeLimitsTab(settings = settings, viewModel = viewModel)
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // Exit settings tab button
+                        var isExitFocused by remember { mutableStateOf(false) }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isExitFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .onFocusChanged { isExitFocused = it.isFocused }
+                                .focusable()
+                                .clickable { onCloseSettings() }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = if (isExitFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.btn_exit_settings),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isExitFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                                )
+                            )
                         }
-                        ParentalTab.BEDTIME_SCHEDULE -> {
-                            BedtimeScheduleTab(settings = settings, viewModel = viewModel)
-                        }
-                        ParentalTab.THEME_APPEARANCE -> {
-                            ThemeAppearanceTab(settings = settings, viewModel = viewModel)
-                        }
-                        ParentalTab.SUPERVISION_LOGS -> {
-                            SupervisionLogsTab(recentLogs = recentLogs, viewModel = viewModel)
-                        }
-                        ParentalTab.PIN_CONFIGURATION -> {
-                            PinConfigurationTab(settings = settings, viewModel = viewModel)
+                    }
+
+                    // RIGHT COLUMN: Content Panel matching selected tab
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .padding(24.dp)
+                    ) {
+                        AnimatedContent(targetState = activeTab) { tab ->
+                            when (tab) {
+                                ParentalTab.APP_RESTRICTIONS -> {
+                                    AppRestrictionsTab(apps = apps, viewModel = viewModel)
+                                }
+                                ParentalTab.SCREENTIME_LIMIT -> {
+                                    ScreentimeLimitsTab(settings = settings, viewModel = viewModel)
+                                }
+                                ParentalTab.BEDTIME_SCHEDULE -> {
+                                    BedtimeScheduleTab(settings = settings, viewModel = viewModel)
+                                }
+                                ParentalTab.THEME_APPEARANCE -> {
+                                    ThemeAppearanceTab(settings = settings, viewModel = viewModel)
+                                }
+                                ParentalTab.SUPERVISION_LOGS -> {
+                                    SupervisionLogsTab(recentLogs = recentLogs, viewModel = viewModel)
+                                }
+                                ParentalTab.PIN_CONFIGURATION -> {
+                                    PinConfigurationTab(settings = settings, viewModel = viewModel)
+                                }
+                            }
                         }
                     }
                 }
@@ -252,6 +407,7 @@ fun AppRestrictionsTab(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
                 .padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -304,6 +460,7 @@ fun AppRestrictionsTab(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
                 .padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -630,109 +787,220 @@ fun BedtimeScheduleTab(
     val displayEndHr = if (settings.bedtimeEndHour > 12) settings.bedtimeEndHour - 12 else (if (settings.bedtimeEndHour == 0) 12 else settings.bedtimeEndHour)
     val endAmPm = if (settings.bedtimeEndHour in 12..23) "PM" else "AM"
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(
-            text = stringResource(R.string.bedtime_title),
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-        )
-        Text(
-            text = stringResource(R.string.bedtime_desc),
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isNarrow = maxWidth < 560.dp
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Start Bedtime Box
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
-                Text(
-                    text = "$displayStartHr:00 $startAmPm",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                )
+            Text(
+                text = stringResource(R.string.bedtime_title),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            )
+            Text(
+                text = stringResource(R.string.bedtime_desc),
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
+            )
 
-                LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    items(startHours, key = { it }) { hr ->
-                        var isFocused by remember { mutableStateOf(false) }
-                        val isSelected = settings.bedtimeStartHour == hr
-                        val bg = if (isSelected) MaterialTheme.colorScheme.primary else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
-                        val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+            if (isNarrow) {
+                // Stack vertically on narrow displays
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Start Bedtime Box
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                        Text(
+                            text = "$displayStartHr:00 $startAmPm",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        )
 
-                        val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                        val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                        LazyColumn(modifier = Modifier.height(180.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            items(startHours, key = { it }) { hr ->
+                                var isFocused by remember { mutableStateOf(false) }
+                                val isSelected = settings.bedtimeStartHour == hr
+                                val bg = if (isSelected) MaterialTheme.colorScheme.primary else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
+                                val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(38.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(bg)
-                                .border(
-                                    1.dp,
-                                    if (isFocused) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                    RoundedCornerShape(6.dp)
-                                )
-                                .onFocusChanged { isFocused = it.isFocused }
-                                .focusable()
-                                .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(38.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(bg)
+                                        .border(
+                                            1.dp,
+                                            if (isFocused) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                            RoundedCornerShape(6.dp)
+                                        )
+                                        .onFocusChanged { isFocused = it.isFocused }
+                                        .focusable()
+                                        .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                }
+                            }
+                        }
+                    }
+
+                    // End Bedtime Box
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                        Text(
+                            text = "$displayEndHr:00 $endAmPm",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                        )
+
+                        LazyColumn(modifier = Modifier.height(180.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            items(endHours, key = { it }) { hr ->
+                                var isFocused by remember { mutableStateOf(false) }
+                                val isSelected = settings.bedtimeEndHour == hr
+                                val bg = if (isSelected) Color(0xFF10B981) else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
+                                val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+
+                                val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(38.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(bg)
+                                        .border(
+                                            1.dp,
+                                            if (isFocused) Color(0xFF10B981) else Color.Transparent,
+                                            RoundedCornerShape(6.dp)
+                                        )
+                                        .onFocusChanged { isFocused = it.isFocused }
+                                        .focusable()
+                                        .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                }
+                            }
                         }
                     }
                 }
-            }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Start Bedtime Box
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                        Text(
+                            text = "$displayStartHr:00 $startAmPm",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        )
 
-            // End Bedtime Box
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
-                Text(
-                    text = "$displayEndHr:00 $endAmPm",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
-                )
+                        LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            items(startHours, key = { it }) { hr ->
+                                var isFocused by remember { mutableStateOf(false) }
+                                val isSelected = settings.bedtimeStartHour == hr
+                                val bg = if (isSelected) MaterialTheme.colorScheme.primary else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
+                                val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
-                LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    items(endHours, key = { it }) { hr ->
-                        var isFocused by remember { mutableStateOf(false) }
-                        val isSelected = settings.bedtimeEndHour == hr
-                        val bg = if (isSelected) Color(0xFF10B981) else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
-                        val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
 
-                        val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                        val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(38.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(bg)
+                                        .border(
+                                            1.dp,
+                                            if (isFocused) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                            RoundedCornerShape(6.dp)
+                                        )
+                                        .onFocusChanged { isFocused = it.isFocused }
+                                        .focusable()
+                                        .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                }
+                            }
+                        }
+                    }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(38.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(bg)
-                                .border(
-                                    1.dp,
-                                    if (isFocused) Color(0xFF10B981) else Color.Transparent,
-                                    RoundedCornerShape(6.dp)
-                                )
-                                .onFocusChanged { isFocused = it.isFocused }
-                                .focusable()
-                                .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                    // End Bedtime Box
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                        Text(
+                            text = "$displayEndHr:00 $endAmPm",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                        )
+
+                        LazyColumn(modifier = Modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            items(endHours, key = { it }) { hr ->
+                                var isFocused by remember { mutableStateOf(false) }
+                                val isSelected = settings.bedtimeEndHour == hr
+                                val bg = if (isSelected) Color(0xFF10B981) else (if (isFocused) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
+                                val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+
+                                val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
+                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(38.dp)
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(bg)
+                                        .border(
+                                            1.dp,
+                                            if (isFocused) Color(0xFF10B981) else Color.Transparent,
+                                            RoundedCornerShape(6.dp)
+                                        )
+                                        .onFocusChanged { isFocused = it.isFocused }
+                                        .focusable()
+                                        .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                }
+                            }
                         }
                     }
                 }
@@ -758,150 +1026,311 @@ fun SupervisionLogsTab(
         0
     }
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = stringResource(R.string.logs_title),
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                )
-                Text(
-                    text = stringResource(R.string.logs_desc),
-                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isNarrow = maxWidth < 580.dp
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                var isResetUsageFocused by remember { mutableStateOf(false) }
-                Button(
-                    onClick = {
-                        viewModel.resetTodayUsage()
-                        Toast.makeText(context, context.getString(R.string.toast_screentime_reset), Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isResetUsageFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    modifier = Modifier
-                        .onFocusChanged { isResetUsageFocused = it.isFocused }
-                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Adaptive Header (Title & Action Buttons)
+            if (isNarrow) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = stringResource(R.string.btn_reset_screentime),
-                        color = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                var isClearFocused by remember { mutableStateOf(false) }
-                Button(
-                    onClick = {
-                        viewModel.clearLaunchLogs()
-                        Toast.makeText(context, context.getString(R.string.toast_logs_cleared), Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    modifier = Modifier
-                        .onFocusChanged { isClearFocused = it.isFocused }
-                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
-                ) {
-                    Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.btn_clear_all_logs),
-                        color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-
-        // STATS INSIGHTS ROW (Visual Progress Bars & Metrics)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Card 1: Screentime Usage Summary
-            Card(
-                modifier = Modifier.weight(1f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.logs_card_today_screentime),
-                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                        text = stringResource(R.string.logs_title),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                     )
                     Text(
-                        text = stringResource(R.string.logs_stat_mins, usageTodayMin),
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        text = stringResource(R.string.logs_desc),
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
                     )
-                    Text(
-                        text = stringResource(R.string.logs_card_today_screentime_sub),
-                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                    )
-                }
-            }
-
-            // Card 2: App Launch Frequency Distribution (Mini-Bar-Chart)
-            Card(
-                modifier = Modifier.weight(1.5f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.logs_card_frequency_chart),
-                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
-                    )
-
-                    val topApps = recentLogs.groupBy { it.appName }
-                        .mapValues { it.value.size }
-                        .toList()
-                        .sortedByDescending { it.second }
-                        .take(3)
-
-                    if (topApps.isEmpty()) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(60.dp),
-                            contentAlignment = Alignment.Center
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        var isResetUsageFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                viewModel.resetTodayUsage()
+                                Toast.makeText(context, context.getString(R.string.toast_screentime_reset), Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isResetUsageFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            modifier = Modifier
+                                .onFocusChanged { isResetUsageFocused = it.isFocused }
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
                         ) {
-                            Text(text = stringResource(R.string.logs_no_stats), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
+                            Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.btn_reset_screentime),
+                                color = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
                         }
-                    } else {
-                        val maxLaunches = topApps.maxOf { it.second }.toFloat()
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            topApps.forEach { (appName, count) ->
-                                val pct = count.toFloat() / maxLaunches
-                                Column {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(text = appName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold))
-                                        Text(text = stringResource(R.string.logs_launch_count, count), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+
+                        var isClearFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                viewModel.clearLaunchLogs()
+                                Toast.makeText(context, context.getString(R.string.toast_logs_cleared), Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            modifier = Modifier
+                                .onFocusChanged { isClearFocused = it.isFocused }
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                        ) {
+                            Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.btn_clear_all_logs),
+                                color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
+                        Text(
+                            text = stringResource(R.string.logs_title),
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                        )
+                        Text(
+                            text = stringResource(R.string.logs_desc),
+                            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        var isResetUsageFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                viewModel.resetTodayUsage()
+                                Toast.makeText(context, context.getString(R.string.toast_screentime_reset), Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isResetUsageFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            modifier = Modifier
+                                .onFocusChanged { isResetUsageFocused = it.isFocused }
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                        ) {
+                            Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.btn_reset_screentime),
+                                color = if (isResetUsageFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        var isClearFocused by remember { mutableStateOf(false) }
+                        Button(
+                            onClick = {
+                                viewModel.clearLaunchLogs()
+                                Toast.makeText(context, context.getString(R.string.toast_logs_cleared), Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isClearFocused) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            modifier = Modifier
+                                .onFocusChanged { isClearFocused = it.isFocused }
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                        ) {
+                            Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.btn_clear_all_logs),
+                                color = if (isClearFocused) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+            }
+
+            // STATS INSIGHTS SECTION (Adaptive layout: Stack on narrow screens, Row on wider screens)
+            if (isNarrow) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Card 1: Screentime Usage Summary
+                    Card(
+                        modifier = Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.logs_card_today_screentime),
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = stringResource(R.string.logs_stat_mins, usageTodayMin),
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            )
+                            Text(
+                                text = stringResource(R.string.logs_card_today_screentime_sub),
+                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                            )
+                        }
+                    }
+
+                    // Card 2: App Launch Frequency Distribution (Mini-Bar-Chart)
+                    Card(
+                        modifier = Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.logs_card_frequency_chart),
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                            )
+
+                            val topApps = recentLogs.groupBy { it.appName }
+                                .mapValues { it.value.size }
+                                .toList()
+                                .sortedByDescending { it.second }
+                                .take(3)
+
+                            if (topApps.isEmpty()) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().height(60.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = stringResource(R.string.logs_no_stats), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
+                                }
+                            } else {
+                                val maxLaunches = topApps.maxOf { it.second }.toFloat()
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    topApps.forEach { (appName, count) ->
+                                        val pct = count.toFloat() / maxLaunches
+                                        Column {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(text = appName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                                Text(text = stringResource(R.string.logs_launch_count, count), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                                            }
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(CircleShape)
+                                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxHeight()
+                                                        .fillMaxWidth(pct)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.primary)
+                                                )
+                                            }
+                                        }
                                     }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(CircleShape)
-                                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxHeight()
-                                                .fillMaxWidth(pct)
-                                                .clip(CircleShape)
-                                                .background(MaterialTheme.colorScheme.primary)
-                                        )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Card 1: Screentime Usage Summary
+                    Card(
+                        modifier = Modifier.weight(1f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.logs_card_today_screentime),
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = stringResource(R.string.logs_stat_mins, usageTodayMin),
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            )
+                            Text(
+                                text = stringResource(R.string.logs_card_today_screentime_sub),
+                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                            )
+                        }
+                    }
+
+                    // Card 2: App Launch Frequency Distribution (Mini-Bar-Chart)
+                    Card(
+                        modifier = Modifier.weight(1.5f).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = stringResource(R.string.logs_card_frequency_chart),
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
+                            )
+
+                            val topApps = recentLogs.groupBy { it.appName }
+                                .mapValues { it.value.size }
+                                .toList()
+                                .sortedByDescending { it.second }
+                                .take(3)
+
+                            if (topApps.isEmpty()) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().height(60.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = stringResource(R.string.logs_no_stats), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
+                                }
+                            } else {
+                                val maxLaunches = topApps.maxOf { it.second }.toFloat()
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    topApps.forEach { (appName, count) ->
+                                        val pct = count.toFloat() / maxLaunches
+                                        Column {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(text = appName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                                Text(text = stringResource(R.string.logs_launch_count, count), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
+                                            }
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(CircleShape)
+                                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxHeight()
+                                                        .fillMaxWidth(pct)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.primary)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -909,71 +1338,71 @@ fun SupervisionLogsTab(
                     }
                 }
             }
-        }
 
-        // Activity Logs List Section
-        Text(
-            text = stringResource(R.string.logs_chronological_header),
-            style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-            modifier = Modifier.padding(top = 8.dp)
-        )
+            // Activity Logs List Section
+            Text(
+                text = stringResource(R.string.logs_chronological_header),
+                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                modifier = Modifier.padding(top = 8.dp)
+            )
 
-        if (recentLogs.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(imageVector = Icons.Default.HistoryToggleOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), modifier = Modifier.size(48.dp))
-                    Text(text = stringResource(R.string.logs_no_logs_yet), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
+            if (recentLogs.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(imageVector = Icons.Default.HistoryToggleOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f), modifier = Modifier.size(48.dp))
+                        Text(text = stringResource(R.string.logs_no_logs_yet), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                items(recentLogs, key = { it.id }) { log ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
-                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.Launch, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = log.appName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface))
-                            Text(text = log.packageName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
-                        }
-                        Text(
-                            text = SimpleDateFormat("MMM dd, hh:mm:ss a", Locale.getDefault()).format(Date(log.timestamp)),
-                            style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        var isDeleteLogFocused by remember { mutableStateOf(false) }
-                        IconButton(
-                            onClick = {
-                                viewModel.deleteLaunchLog(log.id)
-                                Toast.makeText(context, context.getString(R.string.toast_log_deleted), Toast.LENGTH_SHORT).show()
-                            },
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    items(recentLogs, key = { it.id }) { log ->
+                        Row(
                             modifier = Modifier
-                                .size(32.dp)
-                                .onFocusChanged { isDeleteLogFocused = it.isFocused }
-                                .background(if (isDeleteLogFocused) MaterialTheme.colorScheme.error else Color.Transparent, CircleShape)
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(R.string.btn_delete_log),
-                                tint = if (isDeleteLogFocused) Color.White else MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                                modifier = Modifier.size(18.dp)
+                            Icon(imageVector = Icons.AutoMirrored.Filled.Launch, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = log.appName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface))
+                                Text(text = log.packageName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
+                            }
+                            Text(
+                                text = SimpleDateFormat("MMM dd, hh:mm:ss a", Locale.getDefault()).format(Date(log.timestamp)),
+                                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            var isDeleteLogFocused by remember { mutableStateOf(false) }
+                            IconButton(
+                                onClick = {
+                                    viewModel.deleteLaunchLog(log.id)
+                                    Toast.makeText(context, context.getString(R.string.toast_log_deleted), Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .onFocusChanged { isDeleteLogFocused = it.isFocused }
+                                    .background(if (isDeleteLogFocused) MaterialTheme.colorScheme.error else Color.Transparent, CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = stringResource(R.string.btn_delete_log),
+                                    tint = if (isDeleteLogFocused) Color.White else MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -992,118 +1421,230 @@ fun ThemeAppearanceTab(
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.theme_title),
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-        )
-        Text(
-            text = stringResource(R.string.theme_desc),
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isNarrow = maxWidth < 480.dp
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Dark Mode Card
-            var isDarkFocused by remember { mutableStateOf(false) }
-            val isDarkSelected = themeMode != "LIGHT"
-            Card(
-                onClick = { viewModel.setThemeMode("DARK") },
-                modifier = Modifier
-                    .weight(1f)
-                    .border(
-                        width = if (isDarkFocused || isDarkSelected) 2.dp else 1.dp,
-                        color = if (isDarkFocused) Color.White else if (isDarkSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .onFocusChanged { isDarkFocused = it.isFocused }
-                    .focusable(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isDarkFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF6366F1).copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.DarkMode, contentDescription = null, tint = Color(0xFF818CF8))
-                        }
-                        if (isDarkSelected) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                    Text(
-                        text = stringResource(R.string.theme_dark_title),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    )
-                    Text(
-                        text = stringResource(R.string.theme_dark_desc),
-                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
-                    )
-                }
-            }
+            Text(
+                text = stringResource(R.string.theme_title),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            )
+            Text(
+                text = stringResource(R.string.theme_desc),
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
+            )
 
-            // Light Mode Card
-            var isLightFocused by remember { mutableStateOf(false) }
-            val isLightSelected = themeMode == "LIGHT"
-            Card(
-                onClick = { viewModel.setThemeMode("LIGHT") },
-                modifier = Modifier
-                    .weight(1f)
-                    .border(
-                        width = if (isLightFocused || isLightSelected) 2.dp else 1.dp,
-                        color = if (isLightFocused) Color.White else if (isLightSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+            if (isNarrow) {
+                // Stack dark and light theme options vertically on narrow screens
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Dark Mode Card
+                    var isDarkFocused by remember { mutableStateOf(false) }
+                    val isDarkSelected = themeMode != "LIGHT"
+                    Card(
+                        onClick = { viewModel.setThemeMode("DARK") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = if (isDarkFocused || isDarkSelected) 2.dp else 1.dp,
+                                color = if (isDarkFocused) Color.White else if (isDarkSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .onFocusChanged { isDarkFocused = it.isFocused }
+                            .focusable(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDarkFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                        ),
                         shape = RoundedCornerShape(16.dp)
-                    )
-                    .onFocusChanged { isLightFocused = it.isFocused }
-                    .focusable(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isLightFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFF59E0B).copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.LightMode, contentDescription = null, tint = Color(0xFFF59E0B))
-                        }
-                        if (isLightSelected) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
+                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF6366F1).copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.DarkMode, contentDescription = null, tint = Color(0xFF818CF8))
+                                }
+                                if (isDarkSelected) {
+                                    Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            Text(
+                                text = stringResource(R.string.theme_dark_title),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            )
+                            Text(
+                                text = stringResource(R.string.theme_dark_desc),
+                                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
+                            )
                         }
                     }
-                    Text(
-                        text = stringResource(R.string.theme_light_title),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                    )
-                    Text(
-                        text = stringResource(R.string.theme_light_desc),
-                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
-                    )
+
+                    // Light Mode Card
+                    var isLightFocused by remember { mutableStateOf(false) }
+                    val isLightSelected = themeMode == "LIGHT"
+                    Card(
+                        onClick = { viewModel.setThemeMode("LIGHT") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = if (isLightFocused || isLightSelected) 2.dp else 1.dp,
+                                color = if (isLightFocused) Color.White else if (isLightSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .onFocusChanged { isLightFocused = it.isFocused }
+                            .focusable(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isLightFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFF59E0B).copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.LightMode, contentDescription = null, tint = Color(0xFFF59E0B))
+                                }
+                                if (isLightSelected) {
+                                    Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            Text(
+                                text = stringResource(R.string.theme_light_title),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            )
+                            Text(
+                                text = stringResource(R.string.theme_light_desc),
+                                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
+                            )
+                        }
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Dark Mode Card
+                    var isDarkFocused by remember { mutableStateOf(false) }
+                    val isDarkSelected = themeMode != "LIGHT"
+                    Card(
+                        onClick = { viewModel.setThemeMode("DARK") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(
+                                width = if (isDarkFocused || isDarkSelected) 2.dp else 1.dp,
+                                color = if (isDarkFocused) Color.White else if (isDarkSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .onFocusChanged { isDarkFocused = it.isFocused }
+                            .focusable(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDarkFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF6366F1).copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.DarkMode, contentDescription = null, tint = Color(0xFF818CF8))
+                                }
+                                if (isDarkSelected) {
+                                    Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            Text(
+                                text = stringResource(R.string.theme_dark_title),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            )
+                            Text(
+                                text = stringResource(R.string.theme_dark_desc),
+                                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
+                            )
+                        }
+                    }
+
+                    // Light Mode Card
+                    var isLightFocused by remember { mutableStateOf(false) }
+                    val isLightSelected = themeMode == "LIGHT"
+                    Card(
+                        onClick = { viewModel.setThemeMode("LIGHT") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(
+                                width = if (isLightFocused || isLightSelected) 2.dp else 1.dp,
+                                color = if (isLightFocused) Color.White else if (isLightSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .onFocusChanged { isLightFocused = it.isFocused }
+                            .focusable(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isLightFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFF59E0B).copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.LightMode, contentDescription = null, tint = Color(0xFFF59E0B))
+                                }
+                                if (isLightSelected) {
+                                    Icon(Icons.Default.CheckCircle, contentDescription = stringResource(R.string.selected_cd), tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            Text(
+                                text = stringResource(R.string.theme_light_title),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            )
+                            Text(
+                                text = stringResource(R.string.theme_light_desc),
+                                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -1292,7 +1833,9 @@ fun PinConfigurationTab(
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.width(320.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 320.dp)
             ) {
                 keys.forEach { rowKeys ->
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
