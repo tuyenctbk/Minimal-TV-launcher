@@ -526,6 +526,142 @@ fun LauncherHomeScreen(
                             }
                         }
 
+                        // Non-intrusive Rating & Sharing Suggestions
+                        val showRatingSuggestion = !settings.hasRatedApp && !settings.hasDismissedRatingPrompt && settings.appLaunchCount >= settings.nextPromptLaunchThreshold
+                        val showShareSuggestion = settings.hasRatedApp && !settings.hasSharedApp && !settings.hasDismissedSharePrompt && settings.appLaunchCount >= settings.nextPromptLaunchThreshold
+
+                        if (showRatingSuggestion) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = Color(0xFFF59E0B),
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "Enjoying Minimal TV Launcher?",
+                                                style = MaterialTheme.typography.titleSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            )
+                                            Text(
+                                                text = "Your rating helps us keep adding features for kids and families!",
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        TextButton(onClick = { viewModel.dismissRatingPrompt(permanent = true) }) {
+                                            Text("Don't ask again", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        TextButton(onClick = { viewModel.dismissRatingPrompt(permanent = false) }) {
+                                            Text("Later", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Button(
+                                            onClick = { viewModel.rateApp(context) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                            shape = RoundedCornerShape(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                        ) {
+                                            Text("Rate Now", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (showShareSuggestion) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, AccentGreen.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Share,
+                                            contentDescription = null,
+                                            tint = AccentGreen,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "Share with Other Parents!",
+                                                style = MaterialTheme.typography.titleSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            )
+                                            Text(
+                                                text = "Help other parents manage living room TV time safely.",
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        TextButton(onClick = { viewModel.dismissSharePrompt(permanent = true) }) {
+                                            Text("Don't ask again", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        TextButton(onClick = { viewModel.dismissSharePrompt(permanent = false) }) {
+                                            Text("Later", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
+                                        }
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Button(
+                                            onClick = { viewModel.shareApp(context) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = AccentGreen),
+                                            shape = RoundedCornerShape(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                        ) {
+                                            Text("Share App", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         // Divider
                         Box(
                             modifier = Modifier
@@ -840,7 +976,7 @@ fun LauncherHomeScreen(
 
         // 5. TV PIN Recovery Dialog via Registered Email
         if (viewModel.showPinRecoveryDialog) {
-            val registeredEmail = (uiState as? LauncherUiState.Success)?.settings?.recoveryEmail?.ifEmpty { "parent@home.com" } ?: "parent@home.com"
+            val registeredEmail = (uiState as? LauncherUiState.Success)?.settings?.recoveryEmail ?: ""
             TvPinRecoveryDialog(
                 registeredEmail = registeredEmail,
                 onDismiss = {
@@ -862,6 +998,9 @@ fun LauncherHomeScreen(
                             onError(context.getString(R.string.recovery_err_invalid_otp))
                         }
                     )
+                },
+                onSaveEmail = { email ->
+                    viewModel.setRecoveryEmail(email)
                 }
             )
         }

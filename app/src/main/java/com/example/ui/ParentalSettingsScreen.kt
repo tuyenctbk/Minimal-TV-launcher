@@ -1666,7 +1666,7 @@ fun PinConfigurationTab(
     var profileNameInput by remember { mutableStateOf(settings.profileName.ifEmpty { "Family" }) }
     var profileSuccessMsg by remember { mutableStateOf("") }
 
-    var recoveryEmailInput by remember { mutableStateOf(settings.recoveryEmail.ifEmpty { "parent@home.com" }) }
+    var recoveryEmailInput by remember { mutableStateOf(settings.recoveryEmail) }
     var emailSuccessMsg by remember { mutableStateOf("") }
     var simulatedOtpCode by remember { mutableStateOf("") }
 
@@ -2058,6 +2058,71 @@ fun PinConfigurationTab(
                     if (emailSuccessMsg.isNotEmpty()) {
                         Text(text = emailSuccessMsg, color = AccentGreen, style = MaterialTheme.typography.bodySmall)
                     }
+                }
+            }
+        }
+
+        // APP SUPPORT, RATING & SHARING SECTION
+        item {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val context = LocalContext.current
+
+            Text(
+                text = "App Support & Community",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+            )
+            Text(
+                text = "Enjoying Minimal TV Launcher? Help us improve or share with other parents.",
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                var isRateFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = { viewModel.rateApp(context) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isRateFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .onFocusChanged { isRateFocused = it.isFocused }
+                        .border(1.dp, if (isRateFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                ) {
+                    Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color(0xFFF59E0B))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Rate App",
+                        color = if (isRateFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                var isShareFocused by remember { mutableStateOf(false) }
+                Button(
+                    onClick = { viewModel.shareApp(context) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isShareFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .onFocusChanged { isShareFocused = it.isFocused }
+                        .border(1.dp, if (isShareFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Share App",
+                        color = if (isShareFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

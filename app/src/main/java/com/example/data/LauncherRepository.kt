@@ -54,6 +54,39 @@ class LauncherRepository(
         dao.saveSettings(settings.copy(themeMode = themeMode))
     }
 
+    suspend fun incrementAppLaunchCount() {
+        val settings = getSettings()
+        dao.saveSettings(settings.copy(appLaunchCount = settings.appLaunchCount + 1))
+    }
+
+    suspend fun setHasRatedApp(rated: Boolean) {
+        val settings = getSettings()
+        dao.saveSettings(settings.copy(hasRatedApp = rated, hasDismissedRatingPrompt = rated))
+    }
+
+    suspend fun setHasSharedApp(shared: Boolean) {
+        val settings = getSettings()
+        dao.saveSettings(settings.copy(hasSharedApp = shared, hasDismissedSharePrompt = shared))
+    }
+
+    suspend fun dismissRatingPrompt(permanent: Boolean) {
+        val settings = getSettings()
+        if (permanent) {
+            dao.saveSettings(settings.copy(hasDismissedRatingPrompt = true))
+        } else {
+            dao.saveSettings(settings.copy(nextPromptLaunchThreshold = settings.appLaunchCount + 10))
+        }
+    }
+
+    suspend fun dismissSharePrompt(permanent: Boolean) {
+        val settings = getSettings()
+        if (permanent) {
+            dao.saveSettings(settings.copy(hasDismissedSharePrompt = true))
+        } else {
+            dao.saveSettings(settings.copy(nextPromptLaunchThreshold = settings.appLaunchCount + 10))
+        }
+    }
+
     suspend fun updateAppBlockedStatus(packageName: String, isBlocked: Boolean) {
         dao.updateAppBlockedStatus(packageName, isBlocked)
     }

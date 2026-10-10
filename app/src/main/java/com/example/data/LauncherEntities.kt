@@ -15,7 +15,7 @@ data class ParentalSettings(
     @PrimaryKey val id: Int = 0,
     val profileName: String = "Family",
     val pin: String = "0000",
-    val recoveryEmail: String = "parent@home.com",
+    val recoveryEmail: String = "",
     val dailyLimitMinutes: Int = 60, // 0 for unlimited
     val bedtimeStartHour: Int = 21,  // 9 PM
     val bedtimeStartMinute: Int = 0,
@@ -24,7 +24,13 @@ data class ParentalSettings(
     val usageTodayMs: Long = 0,
     val lastActiveTimestamp: Long = System.currentTimeMillis(),
     val lastActiveDate: String = "", // format: YYYY-MM-DD
-    val themeMode: String = "DARK"   // "DARK" or "LIGHT"
+    val themeMode: String = "DARK",  // "DARK" or "LIGHT"
+    val appLaunchCount: Int = 0,
+    val hasRatedApp: Boolean = false,
+    val hasSharedApp: Boolean = false,
+    val hasDismissedRatingPrompt: Boolean = false,
+    val hasDismissedSharePrompt: Boolean = false,
+    val nextPromptLaunchThreshold: Int = 5
 )
 
 @Entity(tableName = "app_restrictions")
@@ -106,7 +112,7 @@ interface LauncherDao {
     suspend fun clearLaunchLogs()
 }
 
-@Database(entities = [ParentalSettings::class, AppRestriction::class, LaunchLog::class], version = 3, exportSchema = false)
+@Database(entities = [ParentalSettings::class, AppRestriction::class, LaunchLog::class], version = 4, exportSchema = false)
 abstract class LauncherDatabase : RoomDatabase() {
     abstract fun launcherDao(): LauncherDao
 }

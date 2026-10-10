@@ -83,8 +83,9 @@ class LauncherViewModel(
 
     init {
         viewModelScope.launch {
-            // Initial sync of installed apps to local restrictions database
+            // Initial sync of installed apps and increment launch count for session
             repository.syncInstalledApps()
+            repository.incrementAppLaunchCount()
 
             // Combine data flows reactively
             combine(
@@ -335,6 +336,67 @@ class LauncherViewModel(
             currentMinutes >= startMinutes || currentMinutes < endMinutes
         } else {
             false
+        }
+    }
+
+    fun rateApp(context: android.content.Context) {
+        viewModelScope.launch {
+            repository.setHasRatedApp(true)
+            try {
+                val intent = android.content.Intent(
+                    android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse("market://details?id=${context.packageName}")
+                ).apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (_: Exception) {
+                try {
+                    val webIntent = android.content.Intent(
+                        android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                    ).apply {
+                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(webIntent)
+                } catch (_: Exception) {
+                    android.widget.Toast.makeText(context, "Thank you for rating our app!", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    fun shareApp(context: android.content.Context) {
+        viewModelScope.launch {
+            repository.setHasSharedApp(true)
+            try {
+                val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(
+                        android.content.Intent.EXTRA_TEXT,
+                        "Check out Minimal TV Launcher & Parental Controls! https://play.google.com/store/apps/details?id=${context.packageName}"
+                    )
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                val chooser = android.content.Intent.createChooser(shareIntent, "Share Minimal TV Launcher").apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(chooser)
+            } catch (_: Exception) {
+                android.widget.Toast.makeText(context, "Unable to open share sheet", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun dismissRatingPrompt(permanent: Boolean) {
+        viewModelScope.launch {
+            repository.dismissRatingPrompt(permanent)
+        }
+    }
+
+    fun dismissSharePrompt(permanent: Boolean) {
+        viewModelScope.launch {
+            repository.dismissSharePrompt(permanent)
         }
     }
 

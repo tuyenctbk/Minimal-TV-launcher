@@ -363,28 +363,31 @@ fun TvPinRecoveryDialog(
     registeredEmail: String,
     onDismiss: () -> Unit,
     onRequestOtp: (onGenerated: (code: String, email: String) -> Unit) -> Unit,
-    onVerifyAndReset: (otp: String, newPin: String, onSuccess: () -> Unit, onError: (String) -> Unit) -> Unit
+    onVerifyAndReset: (otp: String, newPin: String, onSuccess: () -> Unit, onError: (String) -> Unit) -> Unit,
+    onSaveEmail: ((String) -> Unit)? = null
 ) {
     var step by remember { mutableStateOf(1) } // 1 = Request, 2 = Enter OTP, 3 = New PIN
     var simulatedCode by remember { mutableStateOf("") }
     var enteredOtp by remember { mutableStateOf("") }
     var newPinText by remember { mutableStateOf("") }
-    var confirmPinText by remember { mutableStateOf("") }
+    var customEmailInput by remember { mutableStateOf(registeredEmail) }
     var statusMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
     val defaultEmailLabel = stringResource(R.string.recovery_registered_address_label)
     val codeDispatchedMsg = stringResource(R.string.recovery_code_generated_valid)
 
-    val maskedEmail = remember(registeredEmail, defaultEmailLabel) {
-        if (registeredEmail.contains("@")) {
-            val parts = registeredEmail.split("@")
+    val currentEmail = customEmailInput.ifBlank { registeredEmail }
+
+    val maskedEmail = remember(currentEmail, defaultEmailLabel) {
+        if (currentEmail.contains("@")) {
+            val parts = currentEmail.split("@")
             val name = parts[0]
             val domain = parts[1]
             val maskedName = if (name.length > 2) name.take(2) + "***" else name + "***"
             "$maskedName@$domain"
         } else {
-            defaultEmailLabel
+            ""
         }
     }
 
@@ -432,36 +435,100 @@ fun TvPinRecoveryDialog(
 
                 when (step) {
                     1 -> {
-                        Text(
-                            text = stringResource(R.string.recovery_step_1_desc, maskedEmail),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-                            ),
-                            textAlign = TextAlign.Center
-                        )
+                        if (maskedEmail.isEmpty()) {
+                            Text(
+                                text = "No recovery email is set yet. Please enter your email address to receive the reset code:",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                                ),
+                                textAlign = TextAlign.Center
+                            )
 
-                        var isSendFocused by remember { mutableStateOf(false) }
-                        Button(
-                            onClick = {
-                                onRequestOtp { code, _ ->
-                                    simulatedCode = code
-                                    step = 2
-                                    statusMessage = codeDispatchedMsg
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onFocusChanged { isSendFocused = it.isFocused }
-                                .border(
-                                    width = if (isSendFocused) 2.dp else 0.dp,
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(8.dp)
+                            OutlinedTextField(
+                                value = customEmailInput,
+                                onValueChange = { customEmailInput = it },
+                                placeholder = { Text("parent@example.com") },
+                                singleLine = true,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            if (errorMessage.isNotEmpty()) {
+                                Text(
+                                    text = errorMessage,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    textAlign = TextAlign.Center
                                 )
-                        ) {
-                            Text(stringResource(R.string.recovery_btn_send_code), color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+
+                            var isSendFocused by remember { mutableStateOf(false) }
+                            Button(
+                                onClick = {
+                                    if (customEmailInput.contains("@")) {
+                                        errorMessage = ""
+                                        onSaveEmail?.invoke(customEmailInput.trim())
+                                        onRequestOtp { code, _ ->
+                                            simulatedCode = code
+                                            step = 2
+                                            statusMessage = codeDispatchedMsg
+                                        }
+                                    } else {
+                                        errorMessage = "Please enter a valid email address."
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .onFocusChanged { isSendFocused = it.isFocused }
+                                    .border(
+                                        width = if (isSendFocused) 2.dp else 0.dp,
+                                        color = Color.White,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                Text("Save & Send 6-Digit Code", color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+                        } else {
+                            Text(
+                                text = stringResource(R.string.recovery_step_1_desc, maskedEmail),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+
+                            var isSendFocused by remember { mutableStateOf(false) }
+                            Button(
+                                onClick = {
+                                    onRequestOtp { code, _ ->
+                                        simulatedCode = code
+                                        step = 2
+                                        statusMessage = codeDispatchedMsg
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .onFocusChanged { isSendFocused = it.isFocused }
+                                    .border(
+                                        width = if (isSendFocused) 2.dp else 0.dp,
+                                        color = Color.White,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                Text(stringResource(R.string.recovery_btn_send_code), color = Color.White, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
 
