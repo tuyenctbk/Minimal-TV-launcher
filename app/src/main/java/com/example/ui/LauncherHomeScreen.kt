@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -129,20 +131,20 @@ fun LauncherHomeScreen(
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         val isCompact = maxWidth < 600.dp
                         val isWideEnoughForClock = maxWidth >= 360.dp
-                        val horizontalPad = if (isCompact) 16.dp else 32.dp
-                        val verticalPad = if (isCompact) 16.dp else 24.dp
+                        val horizontalPad = if (isCompact) 16.dp else 24.dp
+                        val verticalPad = if (isCompact) 12.dp else 14.dp
 
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = horizontalPad, vertical = verticalPad),
-                            verticalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 16.dp)
+                            verticalArrangement = Arrangement.spacedBy(if (isCompact) 6.dp else 8.dp)
                         ) {
                             // TOP STATUS BAR (Clock, Profile avatar, Screentime Tracker, settings cog)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(if (isCompact) 64.dp else 80.dp),
+                                    .height(if (isCompact) 48.dp else 52.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -152,12 +154,13 @@ fun LauncherHomeScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 modifier = Modifier.weight(1f, fill = false)
                             ) {
-                                val profileName = settings.profileName.ifEmpty { "Family" }
-                                val initialLetter = profileName.firstOrNull()?.uppercaseChar()?.toString() ?: "F"
+                                val defaultProfile = stringResource(R.string.default_profile_name)
+                                val profileName = settings.profileName.ifEmpty { defaultProfile }
+                                val initialLetter = profileName.firstOrNull()?.uppercaseChar()?.toString() ?: defaultProfile.take(1).uppercase()
                                 // Rounded Avatar with initial letter
                                 Box(
                                     modifier = Modifier
-                                        .size(if (isCompact) 38.dp else 44.dp)
+                                        .size(if (isCompact) 36.dp else 40.dp)
                                         .clip(CircleShape)
                                         .background(Color(0xFF6366F1).copy(alpha = 0.2f))
                                         .border(1.dp, Color(0xFF6366F1).copy(alpha = 0.3f), CircleShape),
@@ -241,9 +244,9 @@ fun LauncherHomeScreen(
                                 var isThemeBtnFocused by remember { mutableStateOf(false) }
                                 val themeBtnScale by animateFloatAsState(targetValue = if (isThemeBtnFocused) 1.15f else 1.0f)
                                 val isLightMode = themeMode == "LIGHT"
-                                Box(
+                                 Box(
                                     modifier = Modifier
-                                        .size(44.dp)
+                                        .size(if (isCompact) 36.dp else 38.dp)
                                         .scale(themeBtnScale)
                                         .clip(CircleShape)
                                         .background(if (isThemeBtnFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
@@ -263,7 +266,7 @@ fun LauncherHomeScreen(
                                         imageVector = if (isLightMode) Icons.Default.DarkMode else Icons.Default.LightMode,
                                         contentDescription = if (isLightMode) stringResource(R.string.switch_to_dark_mode) else stringResource(R.string.switch_to_light_mode),
                                         tint = if (isThemeBtnFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(22.dp)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
 
@@ -272,7 +275,7 @@ fun LauncherHomeScreen(
                                 val settingsScale by animateFloatAsState(targetValue = if (isSettingsFocused) 1.15f else 1.0f)
                                 Box(
                                     modifier = Modifier
-                                        .size(44.dp)
+                                        .size(if (isCompact) 36.dp else 38.dp)
                                         .scale(settingsScale)
                                         .clip(CircleShape)
                                         .background(if (isSettingsFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
@@ -296,7 +299,7 @@ fun LauncherHomeScreen(
                                         imageVector = Icons.Default.Settings,
                                         contentDescription = stringResource(R.string.parent_settings),
                                         tint = if (isSettingsFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(22.dp)
+                                        modifier = Modifier.size(20.dp)
                                     )
                                 }
                             }
@@ -337,17 +340,24 @@ fun LauncherHomeScreen(
                                 .border(
                                     width = if (isDashFocused) 2.dp else 1.dp,
                                     color = if (isDashFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-                                    shape = RoundedCornerShape(24.dp)
+                                    shape = RoundedCornerShape(16.dp)
                                 ),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
                             ),
-                            shape = RoundedCornerShape(24.dp)
+                            shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
+                                val bedtimeDisplayHour = if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else (if (settings.bedtimeStartHour == 0) 12 else settings.bedtimeStartHour)
+                                val bedtimeFormatted = stringResource(
+                                    if (settings.bedtimeStartHour >= 12) R.string.bedtime_time_format_pm else R.string.bedtime_time_format_am,
+                                    bedtimeDisplayHour,
+                                    settings.bedtimeStartMinute
+                                )
+
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -355,7 +365,8 @@ fun LauncherHomeScreen(
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.weight(1f, fill = false)
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Lock,
@@ -368,23 +379,60 @@ fun LauncherHomeScreen(
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = MaterialTheme.colorScheme.onSurface
-                                            )
+                                            ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
+                                        if (!isCompact) {
+                                            Text(
+                                                text = stringResource(R.string.next_break_bedtime_bullet, bedtimeFormatted),
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                                ),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
                                     }
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 8.dp, vertical = 2.dp)
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Text(
-                                            text = remainingText,
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+                                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = remainingText,
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
                                             )
-                                        )
+                                        }
+
+                                        if (totalLimitMinutes > 0 && !isBypassed) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(6.dp))
+                                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
+                                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                            ) {
+                                                Text(
+                                                    text = stringResource(R.string.btn_ask_more_time),
+                                                    style = MaterialTheme.typography.labelSmall.copy(
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        letterSpacing = 0.5.sp
+                                                    )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
 
@@ -393,7 +441,7 @@ fun LauncherHomeScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(6.dp)
+                                            .height(4.dp)
                                             .clip(CircleShape)
                                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
                                     ) {
@@ -408,62 +456,6 @@ fun LauncherHomeScreen(
                                                     )
                                                 )
                                         )
-                                    }
-                                }
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val bedtimeDisplayHour = if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else (if (settings.bedtimeStartHour == 0) 12 else settings.bedtimeStartHour)
-                                    val bedtimeAmPm = if (settings.bedtimeStartHour >= 12) "PM" else "AM"
-                                    val bedtimeFormatted = String.format(Locale.getDefault(), "%d:%02d %s", bedtimeDisplayHour, settings.bedtimeStartMinute, bedtimeAmPm)
-
-                                    Column(
-                                        modifier = Modifier.weight(1f, fill = false),
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        Text(
-                                            text = stringResource(
-                                                R.string.next_break_bedtime,
-                                                bedtimeFormatted
-                                            ),
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                                fontWeight = FontWeight.Medium
-                                            ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Text(
-                                            text = stringResource(R.string.managed_by_parental_dashboard),
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
-                                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                                            ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-
-                                    if (totalLimitMinutes > 0 && !isBypassed) {
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.btn_ask_more_time),
-                                                style = MaterialTheme.typography.labelSmall.copy(
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.primary,
-                                                    letterSpacing = 1.sp
-                                                )
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -494,9 +486,9 @@ fun LauncherHomeScreen(
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(16.dp),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bedtime,
@@ -556,14 +548,14 @@ fun LauncherHomeScreen(
                                         )
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "Enjoying Minimal TV Launcher?",
+                                                text = stringResource(R.string.rating_prompt_title),
                                                 style = MaterialTheme.typography.titleSmall.copy(
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                             )
                                             Text(
-                                                text = "Your rating helps us keep adding features for kids and families!",
+                                                text = stringResource(R.string.rating_prompt_subtitle),
                                                 style = MaterialTheme.typography.labelSmall.copy(
                                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                                 )
@@ -577,11 +569,11 @@ fun LauncherHomeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         TextButton(onClick = { viewModel.dismissRatingPrompt(permanent = true) }) {
-                                            Text("Don't ask again", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
+                                            Text(stringResource(R.string.btn_dont_ask_again), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
                                         }
                                         Spacer(modifier = Modifier.width(4.dp))
                                         TextButton(onClick = { viewModel.dismissRatingPrompt(permanent = false) }) {
-                                            Text("Later", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
+                                            Text(stringResource(R.string.btn_later), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
                                         }
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Button(
@@ -590,7 +582,7 @@ fun LauncherHomeScreen(
                                             shape = RoundedCornerShape(8.dp),
                                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                         ) {
-                                            Text("Rate Now", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
+                                            Text(stringResource(R.string.btn_rate_now), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
                                         }
                                     }
                                 }
@@ -621,14 +613,14 @@ fun LauncherHomeScreen(
                                         )
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = "Share with Other Parents!",
+                                                text = stringResource(R.string.share_prompt_title),
                                                 style = MaterialTheme.typography.titleSmall.copy(
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
                                             )
                                             Text(
-                                                text = "Help other parents manage living room TV time safely.",
+                                                text = stringResource(R.string.share_prompt_subtitle),
                                                 style = MaterialTheme.typography.labelSmall.copy(
                                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                                 )
@@ -642,11 +634,11 @@ fun LauncherHomeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         TextButton(onClick = { viewModel.dismissSharePrompt(permanent = true) }) {
-                                            Text("Don't ask again", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
+                                            Text(stringResource(R.string.btn_dont_ask_again), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
                                         }
                                         Spacer(modifier = Modifier.width(4.dp))
                                         TextButton(onClick = { viewModel.dismissSharePrompt(permanent = false) }) {
-                                            Text("Later", style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
+                                            Text(stringResource(R.string.btn_later), style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)))
                                         }
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Button(
@@ -655,65 +647,110 @@ fun LauncherHomeScreen(
                                             shape = RoundedCornerShape(8.dp),
                                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                         ) {
-                                            Text("Share App", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
+                                            Text(stringResource(R.string.btn_share_app), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, color = Color.White))
                                         }
                                     }
                                 }
                             }
                         }
 
-                        // Divider
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
-                        )
+                        // CATEGORY & SEARCH FILTER BAR (Unified TV Horizontal Strip)
+                        var isSearchActive by remember { mutableStateOf(false) }
+                        val searchFocusRequester = remember { FocusRequester() }
 
-                        // Search box for TV launcher
-                        var isSearchFocused by remember { mutableStateOf(false) }
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            placeholder = { Text(stringResource(R.string.search_apps_placeholder), color = Color.Gray) },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.LightGray) },
-                            trailingIcon = {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear_search), tint = Color.LightGray)
-                                    }
-                                }
-                            },
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
-                                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onFocusChanged { isSearchFocused = it.isFocused }
-                                .border(
-                                    width = if (isSearchFocused) 2.dp else 1.dp,
-                                    color = if (isSearchFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                        )
+                        LaunchedEffect(isSearchActive) {
+                            if (isSearchActive) {
+                                searchFocusRequester.requestFocus()
+                            }
+                        }
 
-                        // CATEGORY FILTER BAR
                         val categories = listOf("All", "Streaming", "Games", "Educational", "Productivity", "Other")
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .horizontalScroll(rememberScrollState())
-                                .padding(vertical = 4.dp),
+                                .padding(vertical = 2.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Search pill / field
+                            if (isSearchActive) {
+                                OutlinedTextField(
+                                    value = searchQuery,
+                                    onValueChange = { searchQuery = it },
+                                    placeholder = { Text(stringResource(R.string.search_apps_placeholder), color = Color.Gray, style = MaterialTheme.typography.bodySmall) },
+                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp)) },
+                                    trailingIcon = {
+                                        IconButton(onClick = {
+                                            if (searchQuery.isNotEmpty()) searchQuery = "" else isSearchActive = false
+                                        }) {
+                                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear_search), tint = Color.LightGray, modifier = Modifier.size(16.dp))
+                                        }
+                                    },
+                                    singleLine = true,
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    modifier = Modifier
+                                        .width(220.dp)
+                                        .focusRequester(searchFocusRequester)
+                                )
+                            } else {
+                                var isSearchBtnFocused by remember { mutableStateOf(false) }
+                                val searchScale by animateFloatAsState(targetValue = if (isSearchBtnFocused) 1.08f else 1.0f)
+                                Row(
+                                    modifier = Modifier
+                                        .scale(searchScale)
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(
+                                            if (searchQuery.isNotEmpty()) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                            else if (isSearchBtnFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                            else MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                                        )
+                                        .border(
+                                            width = if (isSearchBtnFocused) 2.dp else 1.dp,
+                                            color = if (isSearchBtnFocused || searchQuery.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                                            shape = RoundedCornerShape(20.dp)
+                                        )
+                                        .onFocusChanged { isSearchBtnFocused = it.isFocused }
+                                        .focusable()
+                                        .clickable { isSearchActive = true }
+                                        .padding(horizontal = 14.dp, vertical = 7.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = stringResource(R.string.search_apps_placeholder),
+                                        tint = if (isSearchBtnFocused || searchQuery.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = if (searchQuery.isNotEmpty()) searchQuery else stringResource(R.string.search_apps_placeholder),
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = if (searchQuery.isNotEmpty()) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSearchBtnFocused || searchQuery.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                                        )
+                                    )
+                                    if (searchQuery.isNotEmpty()) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = stringResource(R.string.clear_search),
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier
+                                                .size(14.dp)
+                                                .clickable { searchQuery = "" }
+                                        )
+                                    }
+                                }
+                            }
+
                             categories.forEach { cat ->
                                 val isSelected = selectedCategory.equals(cat, ignoreCase = true)
                                 var isChipFocused by remember { mutableStateOf(false) }
@@ -745,7 +782,7 @@ fun LauncherHomeScreen(
                                         .clickable {
                                             viewModel.selectCategory(cat)
                                         }
-                                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                                        .padding(horizontal = 14.dp, vertical = 7.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
@@ -851,9 +888,9 @@ fun LauncherHomeScreen(
                         } else {
                             // APPLICATIONS GRID (Adaptive grid layout with TV focus and mobile touch support)
                             LazyVerticalGrid(
-                                columns = GridCells.Adaptive(minSize = if (isCompact) 92.dp else 125.dp),
-                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 10.dp else 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(if (isCompact) 10.dp else 16.dp),
+                                columns = GridCells.Adaptive(minSize = if (isCompact) 88.dp else 112.dp),
+                                horizontalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 12.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -861,7 +898,7 @@ fun LauncherHomeScreen(
                                 items(visibleApps, key = { it.packageName }) { app ->
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         TvFocusableCard(
@@ -880,7 +917,7 @@ fun LauncherHomeScreen(
                                                 selectedAppForOptions = app
                                             },
                                             modifier = Modifier
-                                                .size(if (isCompact) 80.dp else 105.dp),
+                                                .size(if (isCompact) 76.dp else 92.dp),
                                             testTag = "app_item_${app.packageName}"
                                         ) { isFocused ->
                                             Column(
@@ -891,7 +928,7 @@ fun LauncherHomeScreen(
                                                 Image(
                                                     bitmap = drawableToImageBitmap(app.icon),
                                                     contentDescription = app.appName,
-                                                    modifier = Modifier.size(if (isCompact) 38.dp else 50.dp)
+                                                    modifier = Modifier.size(if (isCompact) 36.dp else 44.dp)
                                                 )
                                             }
 
@@ -1148,7 +1185,7 @@ fun ScreentimeStatusCard(
                     .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = "+15m",
+                    text = stringResource(R.string.plus_15m_short),
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = AccentOrange

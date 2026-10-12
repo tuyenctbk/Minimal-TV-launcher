@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             LauncherDatabase::class.java,
             "tv_launcher_parental_db"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration(dropAllTables = true).build()
 
         // 2. Instantiate repository and view model
         repository = LauncherRepository(applicationContext, database.launcherDao())

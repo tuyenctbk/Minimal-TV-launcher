@@ -123,7 +123,7 @@ fun TvFocusableCard(
  */
 @Composable
 fun TvPinPadDialog(
-    title: String = "Enter Parental PIN",
+    title: String = stringResource(R.string.pin_dialog_title_default),
     expectedLength: Int = 4,
     onDismiss: () -> Unit,
     onPinEntered: (String) -> Unit,
@@ -148,17 +148,17 @@ fun TvPinPadDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(14.dp)
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(36.dp)
                 )
 
                 Text(
@@ -209,17 +209,17 @@ fun TvPinPadDialog(
                 )
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     keys.forEach { rowKeys ->
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             rowKeys.forEach { key ->
                                 var isBtnFocused by remember { mutableStateOf(false) }
-                                val btnScale by animateFloatAsState(targetValue = if (isBtnFocused) 1.1f else 1.0f)
+                                val btnScale by animateFloatAsState(targetValue = if (isBtnFocused) 1.08f else 1.0f)
                                 val btnBg = if (isBtnFocused) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
@@ -234,7 +234,7 @@ fun TvPinPadDialog(
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .height(54.dp)
+                                        .height(42.dp)
                                         .scale(btnScale)
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(btnBg)
@@ -376,6 +376,7 @@ fun TvPinRecoveryDialog(
 
     val defaultEmailLabel = stringResource(R.string.recovery_registered_address_label)
     val codeDispatchedMsg = stringResource(R.string.recovery_code_generated_valid)
+    val invalidEmailErr = stringResource(R.string.recovery_invalid_email_err)
 
     val currentEmail = customEmailInput.ifBlank { registeredEmail }
 
@@ -437,7 +438,7 @@ fun TvPinRecoveryDialog(
                     1 -> {
                         if (maskedEmail.isEmpty()) {
                             Text(
-                                text = "No recovery email is set yet. Please enter your email address to receive the reset code:",
+                                text = stringResource(R.string.recovery_no_email_prompt),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                                 ),
@@ -447,7 +448,7 @@ fun TvPinRecoveryDialog(
                             OutlinedTextField(
                                 value = customEmailInput,
                                 onValueChange = { customEmailInput = it },
-                                placeholder = { Text("parent@example.com") },
+                                placeholder = { Text(stringResource(R.string.recovery_email_placeholder)) },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
@@ -480,7 +481,7 @@ fun TvPinRecoveryDialog(
                                             statusMessage = codeDispatchedMsg
                                         }
                                     } else {
-                                        errorMessage = "Please enter a valid email address."
+                                        errorMessage = invalidEmailErr
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
@@ -495,7 +496,7 @@ fun TvPinRecoveryDialog(
                                         shape = RoundedCornerShape(8.dp)
                                     )
                             ) {
-                                Text("Save & Send 6-Digit Code", color = Color.White, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.btn_save_send_code), color = Color.White, fontWeight = FontWeight.Bold)
                             }
                         } else {
                             Text(

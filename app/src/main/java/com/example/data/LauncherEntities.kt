@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Entity(tableName = "parental_settings")
 data class ParentalSettings(
     @PrimaryKey val id: Int = 0,
-    val profileName: String = "Family",
+    val profileName: String = "",
     val pin: String = "0000",
     val recoveryEmail: String = "",
     val dailyLimitMinutes: Int = 60, // 0 for unlimited

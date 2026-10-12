@@ -118,7 +118,7 @@
     <string name="time_pm">%1$d PM</string>
     <string name="time_am">%1$d AM</string>
     <string name="time_pm_clock">%1$d:00 PM</string>
-    <string name="time_am_clock">%1$02d:00 AM</string>
+    <string name="time_am_clock">%1$d:00 AM</string>
 
     <!-- Supervision Logs Tab -->
     <string name="logs_title">Activity Supervision &amp; Usage Insights</string>
@@ -177,4 +177,34 @@
     <string name="recovery_email_save">Save Recovery Email</string>
     <string name="toast_profile_saved">Profile name updated successfully!</string>
     <string name="toast_email_saved">Recovery email updated successfully!</string>
+
+    <!-- Rating and Sharing Prompts -->
+    <string name="rating_prompt_title">Enjoying Minimal TV Launcher?</string>
+    <string name="rating_prompt_subtitle">Your rating helps us keep adding features for kids and families!</string>
+    <string name="btn_dont_ask_again">Don\'t ask again</string>
+    <string name="btn_later">Later</string>
+    <string name="btn_rate_now">Rate Now</string>
+    <string name="share_prompt_title">Share with Other Parents!</string>
+    <string name="share_prompt_subtitle">Help other parents manage living room TV time safely.</string>
+    <string name="btn_share_app">Share App</string>
+    <string name="support_section_title">App Support &amp; Community</string>
+    <string name="support_section_subtitle">Enjoying Minimal TV Launcher? Help us improve or share with other parents.</string>
+    <string name="btn_rate_app">Rate App</string>
+
+    <!-- Additional Recovery Dialog Strings -->
+    <string name="recovery_no_email_prompt">No recovery email is set yet. Please enter your email address to receive the reset code:</string>
+    <string name="recovery_invalid_email_err">Please enter a valid email address.</string>
+    <string name="btn_save_send_code">Save &amp; Send 6-Digit Code</string>
+    <string name="recovery_email_placeholder">parent@example.com</string>
+
+    <!-- Additional Feedback, Formats and Defaults -->
+    <string name="toast_rating_thank_you">Thank you for rating our app!</string>
+    <string name="share_app_text">Check out Minimal TV Launcher &amp; Parental Controls! https://play.google.com/store/apps/details?id=%1$s</string>
+    <string name="share_app_chooser_title">Share Minimal TV Launcher</string>
+    <string name="toast_share_unable">Unable to open share sheet</string>
+    <string name="plus_15m_short">+15m</string>
+    <string name="default_profile_name">Family</string>
+    <string name="bedtime_time_format_pm">%1$d:%2$02d PM</string>
+    <string name="bedtime_time_format_am">%1$d:%2$02d AM</string>
+    <string name="next_break_bedtime_bullet">• Next Break: Bedtime at %1$s</string>
 </resources>

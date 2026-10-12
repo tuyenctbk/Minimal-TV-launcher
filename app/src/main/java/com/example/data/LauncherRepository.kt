@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import com.example.R
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -21,6 +22,7 @@ class LauncherRepository(
         val existing = dao.getSettings()
         if (existing == null) {
             val defaultSettings = ParentalSettings(
+                profileName = context.getString(R.string.default_profile_name),
                 pin = "0000",
                 lastActiveDate = getCurrentDateString()
             )

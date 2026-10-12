@@ -59,7 +59,7 @@ class LauncherScreenshotsTest {
         composeTestRule.setContent {
             MyApplicationTheme {
                 TvPinPadDialog(
-                    title = "Parental Security Lock",
+                    title = androidx.compose.ui.res.stringResource(R.string.pin_dialog_title_auth),
                     onPinEntered = { pinState.value = it },
                     onDismiss = {},
                     onForgotPinClicked = {}
@@ -75,9 +75,9 @@ class LauncherScreenshotsTest {
         composeTestRule.setContent {
             MyApplicationTheme {
                 TvPinRecoveryDialog(
-                    registeredEmail = "tuyenctbk@gmail.com",
+                    registeredEmail = "parent@example.com",
                     onDismiss = {},
-                    onRequestOtp = { onGenerated -> onGenerated("748291", "tuyenctbk@gmail.com") },
+                    onRequestOtp = { onGenerated -> onGenerated("748291", "parent@example.com") },
                     onVerifyAndReset = { _, _, _, _ -> }
                 )
             }

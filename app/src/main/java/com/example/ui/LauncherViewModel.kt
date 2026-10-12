@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.R
 import com.example.data.AppRestriction
 import com.example.data.LaunchLog
 import com.example.data.LauncherRepository
@@ -218,7 +219,7 @@ class LauncherViewModel(
             if (success) {
                 onSuccess()
             } else {
-                onFailed("Invalid or expired 6-digit recovery code. Please retry.")
+                onFailed("")
             }
         }
     }
@@ -360,7 +361,7 @@ class LauncherViewModel(
                     }
                     context.startActivity(webIntent)
                 } catch (_: Exception) {
-                    android.widget.Toast.makeText(context, "Thank you for rating our app!", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(context, context.getString(R.string.toast_rating_thank_you), android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -374,16 +375,16 @@ class LauncherViewModel(
                     type = "text/plain"
                     putExtra(
                         android.content.Intent.EXTRA_TEXT,
-                        "Check out Minimal TV Launcher & Parental Controls! https://play.google.com/store/apps/details?id=${context.packageName}"
+                        context.getString(R.string.share_app_text, context.packageName)
                     )
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                val chooser = android.content.Intent.createChooser(shareIntent, "Share Minimal TV Launcher").apply {
+                val chooser = android.content.Intent.createChooser(shareIntent, context.getString(R.string.share_app_chooser_title)).apply {
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
                 context.startActivity(chooser)
             } catch (_: Exception) {
-                android.widget.Toast.makeText(context, "Unable to open share sheet", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, context.getString(R.string.toast_share_unable), android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }

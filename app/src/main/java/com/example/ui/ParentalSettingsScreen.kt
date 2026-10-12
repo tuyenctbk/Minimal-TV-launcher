@@ -364,7 +364,7 @@ fun ParentalSettingsScreen(
     }
 }
 
-enum class ParentalTab(@StringRes val titleRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
+enum class ParentalTab(@param:StringRes val titleRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     APP_RESTRICTIONS(R.string.tab_app_guard, Icons.Default.Block),
     SCREENTIME_LIMIT(R.string.tab_screentime, Icons.Default.Timer),
     BEDTIME_SCHEDULE(R.string.tab_bedtime, Icons.Default.Bedtime),
@@ -782,10 +782,10 @@ fun BedtimeScheduleTab(
     val endHours = listOf(4, 5, 6, 7, 8, 9, 10, 11)
 
     val displayStartHr = if (settings.bedtimeStartHour > 12) settings.bedtimeStartHour - 12 else (if (settings.bedtimeStartHour == 0) 12 else settings.bedtimeStartHour)
-    val startAmPm = if (settings.bedtimeStartHour in 12..23) "PM" else "AM"
+    val displayStartText = stringResource(if (settings.bedtimeStartHour in 12..23) R.string.time_pm_clock else R.string.time_am_clock, displayStartHr)
 
     val displayEndHr = if (settings.bedtimeEndHour > 12) settings.bedtimeEndHour - 12 else (if (settings.bedtimeEndHour == 0) 12 else settings.bedtimeEndHour)
-    val endAmPm = if (settings.bedtimeEndHour in 12..23) "PM" else "AM"
+    val displayEndText = stringResource(if (settings.bedtimeEndHour in 12..23) R.string.time_pm_clock else R.string.time_am_clock, displayEndHr)
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isNarrow = maxWidth < 560.dp
@@ -822,7 +822,7 @@ fun BedtimeScheduleTab(
                     ) {
                         Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                         Text(
-                            text = "$displayStartHr:00 $startAmPm",
+                            text = displayStartText,
                             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         )
 
@@ -834,7 +834,7 @@ fun BedtimeScheduleTab(
                                 val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
                                 val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                                val itemText = stringResource(if (hr in 12..23) R.string.time_pm_clock else R.string.time_am_clock, itemHr)
 
                                 Box(
                                     modifier = Modifier
@@ -852,7 +852,7 @@ fun BedtimeScheduleTab(
                                         .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    Text(text = itemText, color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                                 }
                             }
                         }
@@ -869,7 +869,7 @@ fun BedtimeScheduleTab(
                     ) {
                         Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                         Text(
-                            text = "$displayEndHr:00 $endAmPm",
+                            text = displayEndText,
                             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
                         )
 
@@ -881,7 +881,7 @@ fun BedtimeScheduleTab(
                                 val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
                                 val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                                val itemText = stringResource(if (hr in 12..23) R.string.time_pm_clock else R.string.time_am_clock, itemHr)
 
                                 Box(
                                     modifier = Modifier
@@ -899,7 +899,7 @@ fun BedtimeScheduleTab(
                                         .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    Text(text = itemText, color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                                 }
                             }
                         }
@@ -921,7 +921,7 @@ fun BedtimeScheduleTab(
                     ) {
                         Text(text = stringResource(R.string.bedtime_start_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                         Text(
-                            text = "$displayStartHr:00 $startAmPm",
+                            text = displayStartText,
                             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         )
 
@@ -933,7 +933,7 @@ fun BedtimeScheduleTab(
                                 val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
                                 val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                                val itemText = stringResource(if (hr in 12..23) R.string.time_pm_clock else R.string.time_am_clock, itemHr)
 
                                 Box(
                                     modifier = Modifier
@@ -951,7 +951,7 @@ fun BedtimeScheduleTab(
                                         .clickable { viewModel.setBedtimeSchedule(hr, settings.bedtimeEndHour) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    Text(text = itemText, color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                                 }
                             }
                         }
@@ -968,7 +968,7 @@ fun BedtimeScheduleTab(
                     ) {
                         Text(text = stringResource(R.string.bedtime_end_hour_label), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)))
                         Text(
-                            text = "$displayEndHr:00 $endAmPm",
+                            text = displayEndText,
                             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
                         )
 
@@ -980,7 +980,7 @@ fun BedtimeScheduleTab(
                                 val textCol = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
 
                                 val itemHr = if (hr > 12) hr - 12 else (if (hr == 0) 12 else hr)
-                                val itemAmPm = if (hr in 12..23) "PM" else "AM"
+                                val itemText = stringResource(if (hr in 12..23) R.string.time_pm_clock else R.string.time_am_clock, itemHr)
 
                                 Box(
                                     modifier = Modifier
@@ -998,7 +998,7 @@ fun BedtimeScheduleTab(
                                         .clickable { viewModel.setBedtimeSchedule(settings.bedtimeStartHour, hr) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "$itemHr:00 $itemAmPm", color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                    Text(text = itemText, color = textCol, style = MaterialTheme.typography.bodyMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
                                 }
                             }
                         }
@@ -1663,7 +1663,8 @@ fun PinConfigurationTab(
     var successMsg by remember { mutableStateOf("") }
     var errMsg by remember { mutableStateOf("") }
 
-    var profileNameInput by remember { mutableStateOf(settings.profileName.ifEmpty { "Family" }) }
+    val defaultProfileName = stringResource(R.string.default_profile_name)
+    var profileNameInput by remember { mutableStateOf(settings.profileName.ifEmpty { defaultProfileName }) }
     var profileSuccessMsg by remember { mutableStateOf("") }
 
     var recoveryEmailInput by remember { mutableStateOf(settings.recoveryEmail) }
@@ -2020,7 +2021,7 @@ fun PinConfigurationTab(
                                 .onFocusChanged { isTestSendFocused = it.isFocused }
                                 .border(1.dp, if (isTestSendFocused) Color.White else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                         ) {
-                            Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp), tint = if (isTestSendFocused) Color.White else MaterialTheme.colorScheme.onSurface)
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(16.dp), tint = if (isTestSendFocused) Color.White else MaterialTheme.colorScheme.onSurface)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = stringResource(R.string.btn_test_recovery_dispatch),
@@ -2070,11 +2071,11 @@ fun PinConfigurationTab(
             val context = LocalContext.current
 
             Text(
-                text = "App Support & Community",
+                text = stringResource(R.string.support_section_title),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
             )
             Text(
-                text = "Enjoying Minimal TV Launcher? Help us improve or share with other parents.",
+                text = stringResource(R.string.support_section_subtitle),
                 style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -2098,7 +2099,7 @@ fun PinConfigurationTab(
                     Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color(0xFFF59E0B))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Rate App",
+                        text = stringResource(R.string.btn_rate_app),
                         color = if (isRateFocused) Color.White else MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
@@ -2119,7 +2120,7 @@ fun PinConfigurationTab(
                     Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Share App",
+                        text = stringResource(R.string.btn_share_app),
                         color = if (isShareFocused) Color.White else MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
