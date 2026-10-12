@@ -1,4 +1,5 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import java.util.Properties
 
 plugins {
   alias(libs.plugins.android.application)
@@ -8,6 +9,16 @@ plugins {
   alias(libs.plugins.secrets)
   alias(libs.plugins.google.services)
 }
+
+// Release signing secrets are read from local.properties (git-ignored), falling back to env vars.
+val localProperties =
+  Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+  }
+
+fun signingProp(name: String): String? =
+  localProperties.getProperty(name) ?: System.getenv(name)
 
 android {
   namespace = "com.example"
@@ -25,11 +36,11 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      storeFile = file(keystorePath)
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = "upload"
-      keyPassword = System.getenv("KEY_PASSWORD")
+      val keystorePath = signingProp("RELEASE_STORE_FILE") ?: "common_release_key.jks"
+      storeFile = rootProject.file(keystorePath)
+      storePassword = signingProp("RELEASE_STORE_PASSWORD")
+      keyAlias = signingProp("RELEASE_KEY_ALIAS")
+      keyPassword = signingProp("RELEASE_KEY_PASSWORD")
     }
     create("debugConfig") {
       storeFile = file("${rootDir}/debug.keystore")

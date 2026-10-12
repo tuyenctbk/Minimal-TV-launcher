@@ -1,18 +1,51 @@
-*.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# ---- Gradle / Kotlin ----
+.gradle/
+.kotlin/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- Android ----
 local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# ---- Signing & secrets (never commit) ----
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+keystore.properties
 .env
-debug.keystore
+.env.*
+!.env.example
+google-services.json
+service-account*.json
+
+# ---- IDE ----
+*.iml
+.idea/*
+!.idea/codeStyles/
+!.idea/runConfigurations/
+.vscode/
+*.swp
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Python helper scripts ----
+__pycache__/
+*.py[cod]
+.venv/
+
+# ---- Logs / temp ----
+*.log
+*.tmp
+hs_err_pid*
