@@ -28,8 +28,8 @@ android {
     applicationId = "com.aistudio.tvlauncher.kidsprotect"
     minSdk = 24
     targetSdk = 36
-    versionCode = 5
-    versionName = "1.4"
+    versionCode = 6
+    versionName = "1.5"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
