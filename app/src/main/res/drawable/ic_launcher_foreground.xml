@@ -7,9 +7,9 @@
 
     <group
         android:pivotX="54"
-        android:pivotY="52"
-        android:scaleX="1.2"
-        android:scaleY="1.2">
+        android:pivotY="56"
+        android:scaleX="1.18"
+        android:scaleY="1.18">
 
         <!-- Subtle Ambient Glow behind TV -->
         <path
@@ -26,26 +26,26 @@
             </aapt:attr>
         </path>
 
-        <!-- TV Stand Base Plate -->
-        <path
-            android:pathData="M40,73 h28 a2,2 0 0,1 2,2 v1 a2,2 0 0,1 -2,2 h-28 a2,2 0 0,1 -2,-2 v-1 a2,2 0 0,1 2,-2 z">
-            <aapt:attr name="android:fillColor">
-                <gradient
-                    android:startX="40"
-                    android:startY="73"
-                    android:endX="70"
-                    android:endY="78"
-                    android:type="linear">
-                    <item android:color="#818CF8" android:offset="0.0" />
-                    <item android:color="#6366F1" android:offset="1.0" />
-                </gradient>
-            </aapt:attr>
-        </path>
-
         <!-- TV Stand Neck -->
         <path
             android:fillColor="#4F46E5"
-            android:pathData="M50,68 h8 v5 h-8 z" />
+            android:pathData="M50,74 h8 v7 h-8 z" />
+
+        <!-- TV Stand Base Plate -->
+        <path
+            android:pathData="M38,81 h32 a2,2 0 0,1 2,2 v2 a2,2 0 0,1 -2,2 h-32 a2,2 0 0,1 -2,-2 v-2 a2,2 0 0,1 2,-2 z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="38"
+                    android:startY="81"
+                    android:endX="72"
+                    android:endY="85"
+                    android:type="linear">
+                        <item android:color="#818CF8" android:offset="0.0" />
+                        <item android:color="#6366F1" android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
 
         <!-- Outer TV Bezel with rounded corners -->
         <path
