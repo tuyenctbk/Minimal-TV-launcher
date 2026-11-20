@@ -5,7 +5,13 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,13 +30,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -77,11 +87,40 @@ fun TvFocusableCard(
     content: @Composable BoxScope.(Boolean) -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(targetValue = if (isFocused) 1.08f else 1.0f)
+    val scale by animateFloatAsState(
+        targetValue = if (isFocused) 1.09f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "tvCardScale"
+    )
+    val borderWidth by animateDpAsState(
+        targetValue = if (isFocused) 2.5.dp else 1.dp,
+        animationSpec = tween(durationMillis = 160),
+        label = "tvCardBorderWidth"
+    )
+    val elevation by animateDpAsState(
+        targetValue = if (isFocused) 14.dp else 2.dp,
+        animationSpec = tween(durationMillis = 180),
+        label = "tvCardElevation"
+    )
+    val containerColor by animateColorAsState(
+        targetValue = if (isFocused) {
+            MaterialTheme.colorScheme.surface
+        } else {
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+        },
+        animationSpec = tween(durationMillis = 160),
+        label = "tvCardContainerColor"
+    )
     val borderColors = if (isFocused) {
-        listOf(MaterialTheme.colorScheme.primary, AccentOrange)
+        listOf(Color(0xFF38BDF8), MaterialTheme.colorScheme.primary, Color(0xFFA5B4FC))
     } else {
-        listOf(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+        listOf(
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+        )
     }
 
     Card(
@@ -90,26 +129,35 @@ fun TvFocusableCard(
             .scale(scale)
             .onFocusChanged { isFocused = it.isFocused }
             .border(
-                width = if (isFocused) 3.dp else 1.dp,
-                brush = Brush.horizontalGradient(borderColors),
-                shape = RoundedCornerShape(12.dp)
+                width = borderWidth,
+                brush = Brush.linearGradient(borderColors),
+                shape = RoundedCornerShape(16.dp)
             )
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(16.dp))
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
             .focusable(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isFocused) 12.dp else 2.dp
-        ),
-        shape = RoundedCornerShape(12.dp)
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    if (isFocused) {
+                        Brush.verticalGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                                Color.Transparent
+                            )
+                        )
+                    } else {
+                        Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
+                    }
+                ),
             contentAlignment = Alignment.Center
         ) {
             content(isFocused)
@@ -125,12 +173,33 @@ fun TvFocusableCard(
 fun TvPinPadDialog(
     title: String = stringResource(R.string.pin_dialog_title_default),
     expectedLength: Int = 4,
+    errorText: String = "",
+    errorTrigger: Int = 0,
     onDismiss: () -> Unit,
     onPinEntered: (String) -> Unit,
     onForgotPinClicked: (() -> Unit)? = null
 ) {
     var enteredText by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    val shakeOffset = remember { Animatable(0f) }
+    val firstKeyFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        try {
+            firstKeyFocusRequester.requestFocus()
+        } catch (_: Exception) {
+        }
+    }
+
+    LaunchedEffect(errorTrigger) {
+        if (errorTrigger > 0) {
+            errorMessage = errorText
+            enteredText = ""
+            for (delta in listOf(-14f, 14f, -10f, 10f, -5f, 5f, 0f)) {
+                shakeOffset.animateTo(delta, animationSpec = tween(durationMillis = 40))
+            }
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -141,25 +210,35 @@ fun TvPinPadDialog(
                 .fillMaxWidth(0.92f)
                 .widthIn(max = 440.dp)
                 .wrapContentHeight()
-                .padding(16.dp),
+                .padding(16.dp)
+                .graphicsLayer { translationX = shakeOffset.value },
             shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 8.dp
         ) {
             Column(
                 modifier = Modifier
-                    .padding(14.dp)
+                    .padding(18.dp)
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(36.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.16f))
+                        .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
 
                 Text(
                     text = title,
@@ -170,19 +249,31 @@ fun TvPinPadDialog(
                     textAlign = TextAlign.Center
                 )
 
-                // Entered dots representation
+                // Entered dots representation with smooth pop animation
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     for (i in 0 until expectedLength) {
                         val active = i < enteredText.length
                         val dotColor by animateColorAsState(
-                            targetValue = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
+                            targetValue = when {
+                                errorMessage.isNotEmpty() -> MaterialTheme.colorScheme.error
+                                active -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.22f)
+                            },
+                            animationSpec = tween(150),
+                            label = "pinDotColor_$i"
+                        )
+                        val dotScale by animateFloatAsState(
+                            targetValue = if (active) 1.25f else 1.0f,
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                            label = "pinDotScale_$i"
                         )
                         Box(
                             modifier = Modifier
                                 .size(16.dp)
+                                .scale(dotScale)
                                 .clip(CircleShape)
                                 .background(dotColor)
                         )
@@ -193,7 +284,7 @@ fun TvPinPadDialog(
                     Text(
                         text = errorMessage,
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -219,29 +310,43 @@ fun TvPinPadDialog(
                         ) {
                             rowKeys.forEach { key ->
                                 var isBtnFocused by remember { mutableStateOf(false) }
-                                val btnScale by animateFloatAsState(targetValue = if (isBtnFocused) 1.08f else 1.0f)
-                                val btnBg = if (isBtnFocused) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-                                }
+                                val btnScale by animateFloatAsState(
+                                    targetValue = if (isBtnFocused) 1.07f else 1.0f,
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                    label = "pinKeyScale_$key"
+                                )
+                                val btnBg by animateColorAsState(
+                                    targetValue = if (isBtnFocused) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f)
+                                    },
+                                    animationSpec = tween(120),
+                                    label = "pinKeyBg_$key"
+                                )
                                 val btnTextCol = if (isBtnFocused) {
                                     Color.White
                                 } else {
                                     MaterialTheme.colorScheme.onSurface
                                 }
 
+                                val keyModifier = if (key == "1") {
+                                    Modifier.focusRequester(firstKeyFocusRequester)
+                                } else {
+                                    Modifier
+                                }
+
                                 Box(
-                                    modifier = Modifier
+                                    modifier = keyModifier
                                         .weight(1f)
-                                        .height(42.dp)
+                                        .height(44.dp)
                                         .scale(btnScale)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .clip(RoundedCornerShape(10.dp))
                                         .background(btnBg)
                                         .border(
                                             width = if (isBtnFocused) 2.dp else 1.dp,
-                                            color = if (isBtnFocused) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f),
-                                            shape = RoundedCornerShape(8.dp)
+                                            color = if (isBtnFocused) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
+                                            shape = RoundedCornerShape(10.dp)
                                         )
                                         .onFocusChanged { isBtnFocused = it.isFocused }
                                         .focusable()
@@ -264,7 +369,7 @@ fun TvPinPadDialog(
                                                     }
                                                     if (enteredText.length == expectedLength) {
                                                         onPinEntered(enteredText)
-                                                        enteredText = "" // Reset for retry/next use
+                                                        enteredText = ""
                                                     }
                                                 }
                                             }
@@ -801,6 +906,26 @@ fun FullscreenLockOverlay(
 ) {
     val bgStart = MaterialTheme.colorScheme.surface
     val bgEnd = MaterialTheme.colorScheme.background
+    val entranceScale = remember { Animatable(0.92f) }
+    val entranceAlpha = remember { Animatable(0f) }
+    val bypassFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(reason) {
+        entranceAlpha.animateTo(1f, animationSpec = tween(280, easing = FastOutSlowInEasing))
+    }
+    LaunchedEffect(reason) {
+        entranceScale.animateTo(
+            targetValue = 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        )
+        try {
+            bypassFocusRequester.requestFocus()
+        } catch (_: Exception) {
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -817,6 +942,8 @@ fun FullscreenLockOverlay(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier
+                .scale(entranceScale.value)
+                .alpha(entranceAlpha.value)
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -831,18 +958,26 @@ fun FullscreenLockOverlay(
 
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(124.dp)
                     .clip(CircleShape)
-                    .background(accentColor.copy(alpha = 0.2f))
-                    .border(2.dp, accentColor, CircleShape),
+                    .background(accentColor.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = accentColor,
-                    modifier = Modifier.size(54.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(accentColor.copy(alpha = 0.2f))
+                        .border(2.dp, accentColor, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = accentColor,
+                        modifier = Modifier.size(54.dp)
+                    )
+                }
             }
 
             Text(
@@ -866,7 +1001,11 @@ fun FullscreenLockOverlay(
             Spacer(modifier = Modifier.height(16.dp))
 
             var isBypassBtnFocused by remember { mutableStateOf(false) }
-            val bypassScale by animateFloatAsState(targetValue = if (isBypassBtnFocused) 1.08f else 1.0f)
+            val bypassScale by animateFloatAsState(
+                targetValue = if (isBypassBtnFocused) 1.08f else 1.0f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                label = "bypassScale"
+            )
 
             Button(
                 onClick = onBypassClicked,
@@ -874,6 +1013,7 @@ fun FullscreenLockOverlay(
                     containerColor = if (isBypassBtnFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                 ),
                 modifier = Modifier
+                    .focusRequester(bypassFocusRequester)
                     .scale(bypassScale)
                     .onFocusChanged { isBypassBtnFocused = it.isFocused }
                     .border(
@@ -942,11 +1082,14 @@ fun TvAppOptionsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Header with App Icon and Names
+                // Header with App Icon and Names (cached ImageBitmap)
+                val cachedIconBitmap = remember(packageName, icon) { drawableToImageBitmap(icon) }
                 androidx.compose.foundation.Image(
-                    bitmap = drawableToImageBitmap(icon),
+                    bitmap = cachedIconBitmap,
                     contentDescription = appName,
-                    modifier = Modifier.size(56.dp)
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(RoundedCornerShape(14.dp))
                 )
 
                 Text(

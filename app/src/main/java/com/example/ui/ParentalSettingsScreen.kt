@@ -542,32 +542,36 @@ fun AppRestrictionsTab(
         ) {
             items(filteredApps, key = { it.packageName }) { app ->
                 var isRowFocused by remember { mutableStateOf(false) }
+                val cachedIcon = remember(app.packageName, app.icon) { drawableToImageBitmap(app.icon) }
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isRowFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (isRowFocused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.55f))
                         .border(
-                            width = 1.dp,
+                            width = if (isRowFocused) 2.dp else 1.dp,
                             color = if (isRowFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(10.dp)
                         )
                         .onFocusChanged { isRowFocused = it.isFocused }
                         .focusable()
+                        .clickable { viewModel.toggleAppBlocked(app.packageName, !app.isBlocked) }
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(8.dp)),
+                            .size(42.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(10.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         androidx.compose.foundation.Image(
-                            bitmap = drawableToImageBitmap(app.icon),
+                            bitmap = cachedIcon,
                             contentDescription = null,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(RoundedCornerShape(6.dp))
                         )
                     }
 
@@ -1359,6 +1363,7 @@ fun SupervisionLogsTab(
                     }
                 }
             } else {
+                val logDateFormatter = remember { SimpleDateFormat("MMM dd, hh:mm:ss a", Locale.getDefault()) }
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
@@ -1381,7 +1386,7 @@ fun SupervisionLogsTab(
                                 Text(text = log.packageName, style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)))
                             }
                             Text(
-                                text = SimpleDateFormat("MMM dd, hh:mm:ss a", Locale.getDefault()).format(Date(log.timestamp)),
+                                text = logDateFormatter.format(Date(log.timestamp)),
                                 style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             )
                             Spacer(modifier = Modifier.width(8.dp))

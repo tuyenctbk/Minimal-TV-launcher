@@ -6,8 +6,19 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,15 +83,21 @@ fun LauncherHomeScreen(
     val themeMode by viewModel.themeMode.collectAsState()
     val selectedCategory = viewModel.selectedCategory
 
-    // Clock and Date State
-    var currentTime by remember { mutableStateOf("") }
-    var currentDate by remember { mutableStateOf("") }
+    // Clock and Date State (cached SimpleDateFormat + live minute tracking for bedtime banner)
+    val timeFormatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
+    var currentTime by remember { mutableStateOf(timeFormatter.format(Date())) }
+    var currentMinutesOfDay by remember {
+        val cal = Calendar.getInstance()
+        mutableIntStateOf(cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE))
+    }
     var searchQuery by remember { mutableStateOf("") }
     var selectedAppForOptions by remember { mutableStateOf<LauncherAppItem?>(null) }
     LaunchedEffect(Unit) {
         while (true) {
-            currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-            currentDate = SimpleDateFormat("EEEE, MMMM dd, yyyy", Locale.getDefault()).format(Date())
+            val now = Date()
+            currentTime = timeFormatter.format(now)
+            val cal = Calendar.getInstance().apply { time = now }
+            currentMinutesOfDay = cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE)
             delay(10000) // Update clock every 10 seconds
         }
     }
@@ -104,9 +121,21 @@ fun LauncherHomeScreen(
             is LauncherUiState.Success -> {
                 val settings = state.settings
                 val isLocked = state.isLocked && !isBypassed
+                val activeScreenMode = when {
+                    isLocked -> "LOCKED"
+                    viewModel.showParentalSettings -> "SETTINGS"
+                    else -> "HOME"
+                }
 
+                AnimatedContent(
+                    targetState = activeScreenMode,
+                    transitionSpec = {
+                        fadeIn(tween(240)) togetherWith fadeOut(tween(180))
+                    },
+                    label = "launcherScreenTransition"
+                ) { mode ->
                 // 1. If currently locked under bedtime or screentime rules, render full-screen block overlay
-                if (isLocked) {
+                if (mode == "LOCKED") {
                     FullscreenLockOverlay(
                         reason = state.lockReason,
                         onBypassClicked = {
@@ -118,7 +147,7 @@ fun LauncherHomeScreen(
                     )
                 }
                 // 2. If parental settings panel is requested, open settings dashboard
-                else if (viewModel.showParentalSettings) {
+                else if (mode == "SETTINGS") {
                     ParentalSettingsScreen(
                         viewModel = viewModel,
                         onCloseSettings = {
@@ -242,7 +271,11 @@ fun LauncherHomeScreen(
 
                                 // Theme Toggle Button (Light / Dark Mode switch for living room ambient conditions)
                                 var isThemeBtnFocused by remember { mutableStateOf(false) }
-                                val themeBtnScale by animateFloatAsState(targetValue = if (isThemeBtnFocused) 1.15f else 1.0f)
+                                val themeBtnScale by animateFloatAsState(
+                                    targetValue = if (isThemeBtnFocused) 1.15f else 1.0f,
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                    label = "themeBtnScale"
+                                )
                                 val isLightMode = themeMode == "LIGHT"
                                  Box(
                                     modifier = Modifier
@@ -272,7 +305,11 @@ fun LauncherHomeScreen(
 
                                 // Settings Button
                                 var isSettingsFocused by remember { mutableStateOf(false) }
-                                val settingsScale by animateFloatAsState(targetValue = if (isSettingsFocused) 1.15f else 1.0f)
+                                val settingsScale by animateFloatAsState(
+                                    targetValue = if (isSettingsFocused) 1.15f else 1.0f,
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                    label = "settingsBtnScale"
+                                )
                                 Box(
                                     modifier = Modifier
                                         .size(if (isCompact) 36.dp else 38.dp)
@@ -307,7 +344,11 @@ fun LauncherHomeScreen(
 
                         // Parental Supervision Active Dashboard (Elegant M3 Card representation)
                         var isDashFocused by remember { mutableStateOf(false) }
-                        val dashScale by animateFloatAsState(targetValue = if (isDashFocused) 1.02f else 1.0f)
+                        val dashScale by animateFloatAsState(
+                            targetValue = if (isDashFocused) 1.015f else 1.0f,
+                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                            label = "dashScale"
+                        )
                         val totalLimitMinutes = settings.dailyLimitMinutes
                         val totalLimitMs = totalLimitMinutes * 60 * 1000L
                         val remainingMs = state.remainingScreentimeMs
@@ -436,23 +477,38 @@ fun LauncherHomeScreen(
                                     }
                                 }
 
-                                // Elegant smooth linear progress bar
+                                // Elegant smooth animated linear progress bar with dynamic urgency color
                                 if (totalLimitMinutes > 0 && !isBypassed) {
+                                    val animatedProgress by animateFloatAsState(
+                                        targetValue = progress,
+                                        animationSpec = tween(durationMillis = 500),
+                                        label = "screentimeProgress"
+                                    )
+                                    val remainingMinutes = (remainingMs / (60 * 1000L)).toInt()
+                                    val barColorStart by animateColorAsState(
+                                        targetValue = when {
+                                            remainingMinutes <= 5 -> Color(0xFFF43F5E)
+                                            remainingMinutes <= 15 -> Color(0xFFF59E0B)
+                                            else -> MaterialTheme.colorScheme.primary
+                                        },
+                                        animationSpec = tween(400),
+                                        label = "screentimeBarColor"
+                                    )
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(4.dp)
+                                            .height(5.dp)
                                             .clip(CircleShape)
                                             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
                                     ) {
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxHeight()
-                                                .fillMaxWidth(progress)
+                                                .fillMaxWidth(animatedProgress)
                                                 .clip(CircleShape)
                                                 .background(
                                                     Brush.horizontalGradient(
-                                                        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+                                                        listOf(barColorStart, MaterialTheme.colorScheme.secondary)
                                                     )
                                                 )
                                         )
@@ -461,21 +517,21 @@ fun LauncherHomeScreen(
                             }
                         }
 
-                        val calendar = Calendar.getInstance()
-                        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-                        val currentMinute = calendar.get(Calendar.MINUTE)
-                        val currentTotalMins = currentHour * 60 + currentMinute
                         val bedtimeStartTotalMins = settings.bedtimeStartHour * 60 + settings.bedtimeStartMinute
-                        val minutesUntilBedtime = if (bedtimeStartTotalMins >= currentTotalMins) {
-                            bedtimeStartTotalMins - currentTotalMins
+                        val minutesUntilBedtime = if (bedtimeStartTotalMins >= currentMinutesOfDay) {
+                            bedtimeStartTotalMins - currentMinutesOfDay
                         } else {
-                            (24 * 60 - currentTotalMins) + bedtimeStartTotalMins
+                            (24 * 60 - currentMinutesOfDay) + bedtimeStartTotalMins
                         }
 
                         val isBedtimeNow = viewModel.isBedtimeActive(settings)
                         val showBedtimeWarning = !isBedtimeNow && !isLocked && !isBypassed && minutesUntilBedtime in 1..15
 
-                        if (showBedtimeWarning) {
+                        AnimatedVisibility(
+                            visible = showBedtimeWarning,
+                            enter = fadeIn(tween(240)) + expandVertically(),
+                            exit = fadeOut(tween(200)) + shrinkVertically()
+                        ) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -658,9 +714,17 @@ fun LauncherHomeScreen(
                         var isSearchActive by remember { mutableStateOf(false) }
                         val searchFocusRequester = remember { FocusRequester() }
 
+                        BackHandler(enabled = isSearchActive || searchQuery.isNotEmpty()) {
+                            searchQuery = ""
+                            isSearchActive = false
+                        }
+
                         LaunchedEffect(isSearchActive) {
                             if (isSearchActive) {
-                                searchFocusRequester.requestFocus()
+                                try {
+                                    searchFocusRequester.requestFocus()
+                                } catch (_: Exception) {
+                                }
                             }
                         }
 
@@ -896,10 +960,15 @@ fun LauncherHomeScreen(
                                     .weight(1f)
                             ) {
                                 items(visibleApps, key = { it.packageName }) { app ->
+                                    val cachedBitmap = remember(app.packageName, app.icon) {
+                                        drawableToImageBitmap(app.icon)
+                                    }
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                                        modifier = Modifier.fillMaxWidth()
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .animateItem()
                                     ) {
                                         TvFocusableCard(
                                             onClick = {
@@ -917,18 +986,26 @@ fun LauncherHomeScreen(
                                                 selectedAppForOptions = app
                                             },
                                             modifier = Modifier
-                                                .size(if (isCompact) 76.dp else 92.dp),
+                                                .size(if (isCompact) 78.dp else 94.dp),
                                             testTag = "app_item_${app.packageName}"
                                         ) { isFocused ->
+                                            val iconScale by animateFloatAsState(
+                                                targetValue = if (isFocused) 1.08f else 1.0f,
+                                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                                label = "appIconScale"
+                                            )
                                             Column(
                                                 horizontalAlignment = Alignment.CenterHorizontally,
                                                 verticalArrangement = Arrangement.Center,
                                                 modifier = Modifier.fillMaxSize()
                                             ) {
                                                 Image(
-                                                    bitmap = drawableToImageBitmap(app.icon),
+                                                    bitmap = cachedBitmap,
                                                     contentDescription = app.appName,
-                                                    modifier = Modifier.size(if (isCompact) 36.dp else 44.dp)
+                                                    modifier = Modifier
+                                                        .size(if (isCompact) 40.dp else 48.dp)
+                                                        .scale(iconScale)
+                                                        .clip(RoundedCornerShape(12.dp))
                                                 )
                                             }
 
@@ -980,32 +1057,39 @@ fun LauncherHomeScreen(
                     }
                 }
                 }
+                }
             }
         }
 
-        // 4. Secure 4-digit PIN pad prompt overlay
+        // 4. Secure 4-digit PIN pad prompt overlay with inline shake feedback
         if (viewModel.showPinPromptForSettings) {
             TvPinPadDialog(
                 title = stringResource(R.string.pin_dialog_title_auth),
+                errorText = stringResource(R.string.toast_invalid_pin),
+                errorTrigger = viewModel.pinErrorTrigger,
                 onDismiss = {
                     viewModel.showPinPromptForSettings = false
                     viewModel.pinPromptSuccessCallback = null
+                    viewModel.pinErrorTrigger = 0
                 },
                 onPinEntered = { pin ->
                     viewModel.verifyPin(
                         enteredPin = pin,
                         onCorrect = {
                             viewModel.showPinPromptForSettings = false
+                            viewModel.pinErrorTrigger = 0
                             viewModel.pinPromptSuccessCallback?.invoke()
                             viewModel.pinPromptSuccessCallback = null
                         },
                         onIncorrect = {
+                            viewModel.pinErrorTrigger += 1
                             Toast.makeText(context, context.getString(R.string.toast_invalid_pin), Toast.LENGTH_SHORT).show()
                         }
                     )
                 },
                 onForgotPinClicked = {
                     viewModel.showPinPromptForSettings = false
+                    viewModel.pinErrorTrigger = 0
                     viewModel.showPinRecoveryDialog = true
                 }
             )

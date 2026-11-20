@@ -2,10 +2,11 @@ package com.example.data
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import com.example.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -150,7 +151,7 @@ class LauncherRepository(
     }
 
     private fun getCurrentDateString(): String {
-        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        return SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
     }
 
     fun autoDetectCategory(packageName: String, appName: String): String {
@@ -196,34 +197,40 @@ class LauncherRepository(
     // Extends screentime for today by adding a bonus
     suspend fun addBonusScreentime(minutes: Int) {
         val settings = getSettings()
-        // Deduct from usageTodayMs to "give" them extra time
+        val now = System.currentTimeMillis()
         val bonusMs = minutes * 60 * 1000L
-        val newUsage = (settings.usageTodayMs - bonusMs).coerceAtLeast(0L)
-        dao.saveSettings(settings.copy(usageTodayMs = newUsage))
+        val limitMs = settings.dailyLimitMinutes * 60 * 1000L
+        // Clamp current usage to daily limit first so granting bonus time always gives the full bonus duration
+        val effectiveUsage = if (limitMs > 0L) settings.usageTodayMs.coerceAtMost(limitMs) else settings.usageTodayMs
+        val newUsage = (effectiveUsage - bonusMs).coerceAtLeast(0L)
+        dao.saveSettings(settings.copy(usageTodayMs = newUsage, lastActiveTimestamp = now))
     }
 
-    // Sync physical applications with DB
-    suspend fun syncInstalledApps() {
+    // Sync physical applications with DB on IO dispatcher
+    suspend fun syncInstalledApps() = withContext(Dispatchers.IO) {
         val pm = context.packageManager
         val selfPkg = context.packageName
-
-        // Query Leanback (TV) and standard launchers
-        val tvIntent = Intent(Intent.ACTION_MAIN, null).apply {
-            addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-        }
-        val tvApps = pm.queryIntentActivities(tvIntent, 0)
 
         val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
         val mainApps = pm.queryIntentActivities(mainIntent, 0)
 
-        // Merge packages uniquely
+        val tvIntent = Intent(Intent.ACTION_MAIN, null).apply {
+            addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+        }
+        val tvApps = pm.queryIntentActivities(tvIntent, 0)
+
+        // Merge packages uniquely: iterate mainApps first so Leanback TV apps take priority
         val installedMap = mutableMapOf<String, String>()
-        for (info in tvApps + mainApps) {
-            val pkg = info.activityInfo.packageName
+        for (info in mainApps + tvApps) {
+            val pkg = info.activityInfo?.packageName ?: continue
             if (pkg != selfPkg) {
-                val label = info.loadLabel(pm).toString()
+                val label = try {
+                    info.loadLabel(pm).toString().ifBlank { pkg }
+                } catch (_: Exception) {
+                    pkg
+                }
                 installedMap[pkg] = label
             }
         }
@@ -259,27 +266,37 @@ class LauncherRepository(
         }
     }
 
-    // Helper to get app info and drawables
-    fun getInstalledAppDetails(): List<AppDetail> {
+    // Helper to get app info and drawables on IO dispatcher (Leanback TV activities prioritized)
+    suspend fun getInstalledAppDetails(): List<AppDetail> = withContext(Dispatchers.IO) {
         val pm = context.packageManager
         val selfPkg = context.packageName
-
-        val tvIntent = Intent(Intent.ACTION_MAIN, null).apply {
-            addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-        }
-        val tvApps = pm.queryIntentActivities(tvIntent, 0)
 
         val mainIntent = Intent(Intent.ACTION_MAIN, null).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
         val mainApps = pm.queryIntentActivities(mainIntent, 0)
 
+        val tvIntent = Intent(Intent.ACTION_MAIN, null).apply {
+            addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+        }
+        val tvApps = pm.queryIntentActivities(tvIntent, 0)
+
+        val fallbackIcon = pm.defaultActivityIcon
         val appDetailsMap = mutableMapOf<String, AppDetail>()
-        for (info in tvApps + mainApps) {
-            val pkg = info.activityInfo.packageName
+        // Iterate mainApps first so Leanback TV launcher icons/activities overwrite mobile entries
+        for (info in mainApps + tvApps) {
+            val pkg = info.activityInfo?.packageName ?: continue
             if (pkg != selfPkg) {
-                val label = info.loadLabel(pm).toString()
-                val icon = info.loadIcon(pm)
+                val label = try {
+                    info.loadLabel(pm).toString().ifBlank { pkg }
+                } catch (_: Exception) {
+                    pkg
+                }
+                val icon = try {
+                    info.loadIcon(pm) ?: fallbackIcon
+                } catch (_: Throwable) {
+                    fallbackIcon
+                }
                 appDetailsMap[pkg] = AppDetail(
                     packageName = pkg,
                     appName = label,
@@ -288,7 +305,7 @@ class LauncherRepository(
                 )
             }
         }
-        return appDetailsMap.values.sortedBy { it.appName.lowercase() }
+        appDetailsMap.values.sortedBy { it.appName.lowercase(Locale.ROOT) }
     }
 }
 

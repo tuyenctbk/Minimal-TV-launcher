@@ -1,12 +1,14 @@
 package com.example.ui
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.R
+import com.example.data.AppDetail
 import com.example.data.AppRestriction
 import com.example.data.LaunchLog
 import com.example.data.LauncherRepository
@@ -60,8 +62,11 @@ class LauncherViewModel(
     private val _isParentBypassed = MutableStateFlow(false)
     val isParentBypassed: StateFlow<Boolean> = _isParentBypassed.asStateFlow()
 
-    // Refresh trigger to force UI recalculation when apps are installed/uninstalled/deleted
-    private val _refreshTrigger = MutableStateFlow(0)
+    // Cached installed apps loaded off the main thread (eliminates polling PackageManager every tick)
+    private val _installedApps = MutableStateFlow<List<AppDetail>>(emptyList())
+
+    // Periodic clock tick so bedtime lock triggers accurately even when dailyLimitMinutes == 0
+    private val _clockTick = MutableStateFlow(0L)
 
     // Current category filter on main screen
     var selectedCategory by mutableStateOf("All")
@@ -79,26 +84,37 @@ class LauncherViewModel(
     var showPinPromptForSettings by mutableStateOf(false)
     var showPinRecoveryDialog by mutableStateOf(false)
     var pinPromptSuccessCallback: (() -> Unit)? by mutableStateOf(null)
+    var pinErrorTrigger by mutableIntStateOf(0)
 
     private var trackingJob: Job? = null
 
     init {
         viewModelScope.launch {
-            // Initial sync of installed apps and increment launch count for session
+            // Initial sync of installed apps on IO thread and increment launch count for session
             repository.syncInstalledApps()
+            _installedApps.value = repository.getInstalledAppDetails()
             repository.incrementAppLaunchCount()
 
-            // Combine data flows reactively
+            // Combine data flows reactively without touching PackageManager on every DB tick
             combine(
                 repository.settingsFlow,
                 repository.restrictionsFlow,
                 repository.recentLogsFlow,
+                _installedApps,
                 _isParentBypassed,
-                _refreshTrigger
-            ) { settingsOpt, restrictions, logs, bypassed, _ ->
+                _clockTick
+            ) { values ->
+                val settingsOpt = values[0] as ParentalSettings?
+                @Suppress("UNCHECKED_CAST")
+                val restrictions = values[1] as List<AppRestriction>
+                @Suppress("UNCHECKED_CAST")
+                val logs = values[2] as List<LaunchLog>
+                @Suppress("UNCHECKED_CAST")
+                val fullApps = values[3] as List<AppDetail>
+                val bypassed = values[4] as Boolean
+
                 val settings = settingsOpt ?: repository.getSettings()
                 _themeMode.value = settings.themeMode
-                val fullApps = repository.getInstalledAppDetails()
 
                 val restrictionMap = restrictions.associateBy { it.packageName }
                 val mappedApps = fullApps.map { detail ->
@@ -152,15 +168,13 @@ class LauncherViewModel(
         trackingJob?.cancel()
         trackingJob = viewModelScope.launch {
             while (isActive) {
-                delay(2000) // Update every 2 seconds to keep stats accurate but lightweight
+                delay(5000) // Update every 5 seconds — accurate and lightweight for TV devices
                 val state = _uiState.value
                 val isBypassed = _isParentBypassed.value
-                // Only track usage if we are NOT bypassed by parent override
-                if (state is LauncherUiState.Success && !isBypassed) {
-                    repository.updateScreentimeTracking(isActive = true)
-                } else {
-                    repository.updateScreentimeTracking(isActive = false)
-                }
+                // Only count active screentime when in kid session, NOT locked, and NOT inside settings
+                val shouldCount = state is LauncherUiState.Success && !isBypassed && !state.isLocked && !showParentalSettings
+                repository.updateScreentimeTracking(isActive = shouldCount)
+                _clockTick.value = System.currentTimeMillis()
             }
         }
     }
@@ -268,7 +282,7 @@ class LauncherViewModel(
     fun grantBonusScreentime(minutes: Int) {
         viewModelScope.launch {
             repository.addBonusScreentime(minutes)
-            _refreshTrigger.value = _refreshTrigger.value + 1
+            _clockTick.value = System.currentTimeMillis()
         }
     }
 
@@ -284,7 +298,7 @@ class LauncherViewModel(
     fun refreshApps() {
         viewModelScope.launch {
             repository.syncInstalledApps()
-            _refreshTrigger.value = _refreshTrigger.value + 1
+            _installedApps.value = repository.getInstalledAppDetails()
         }
     }
 
@@ -297,28 +311,26 @@ class LauncherViewModel(
     fun clearLaunchLogs() {
         viewModelScope.launch {
             repository.clearLogs()
-            _refreshTrigger.value = _refreshTrigger.value + 1
         }
     }
 
     fun deleteLaunchLog(logId: Int) {
         viewModelScope.launch {
             repository.deleteLog(logId)
-            _refreshTrigger.value = _refreshTrigger.value + 1
         }
     }
 
     fun resetTodayUsage() {
         viewModelScope.launch {
             repository.resetTodayUsage()
-            _refreshTrigger.value = _refreshTrigger.value + 1
+            _clockTick.value = System.currentTimeMillis()
         }
     }
 
     fun deleteAppRestriction(packageName: String) {
         viewModelScope.launch {
             repository.deleteAppRestriction(packageName)
-            _refreshTrigger.value = _refreshTrigger.value + 1
+            _installedApps.value = repository.getInstalledAppDetails()
         }
     }
 

@@ -5,22 +5,25 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
+    <!-- Sized strictly inside the 66dp adaptive icon safe zone (radius <= 31.2dp)
+         so Google TV's 72dp circular mask never clips the TV bezel or stand -->
     <group
         android:pivotX="54"
         android:pivotY="56"
-        android:scaleX="1.18"
-        android:scaleY="1.18">
+        android:translateY="-2"
+        android:scaleX="0.74"
+        android:scaleY="0.74">
 
         <!-- Subtle Ambient Glow behind TV -->
         <path
-            android:pathData="M54,49m-28,0a28,28 0 1,1 56,0a28,28 0 1,1 -56,0">
+            android:pathData="M54,49m-30,0a30,30 0 1,1 60,0a30,30 0 1,1 -60,0">
             <aapt:attr name="android:fillColor">
                 <gradient
                     android:centerX="54"
                     android:centerY="49"
-                    android:gradientRadius="28"
+                    android:gradientRadius="30"
                     android:type="radial">
-                    <item android:color="#40818CF8" android:offset="0.0" />
+                    <item android:color="#4538BDF8" android:offset="0.0" />
                     <item android:color="#00000000" android:offset="1.0" />
                 </gradient>
             </aapt:attr>
@@ -28,7 +31,7 @@
 
         <!-- TV Stand Neck -->
         <path
-            android:fillColor="#4F46E5"
+            android:fillColor="#A5B4FC"
             android:pathData="M50,74 h8 v7 h-8 z" />
 
         <!-- TV Stand Base Plate -->
@@ -41,13 +44,13 @@
                     android:endX="72"
                     android:endY="85"
                     android:type="linear">
-                        <item android:color="#818CF8" android:offset="0.0" />
-                        <item android:color="#6366F1" android:offset="1.0" />
+                    <item android:color="#E0E7FF" android:offset="0.0" />
+                    <item android:color="#A5B4FC" android:offset="1.0" />
                 </gradient>
             </aapt:attr>
         </path>
 
-        <!-- Outer TV Bezel with rounded corners -->
+        <!-- Outer TV Bezel with crisp bright metallic lavender-indigo gradient -->
         <path
             android:pathData="M26,27 h56 a6,6 0 0,1 6,6 v36 a6,6 0 0,1 -6,6 h-56 a6,6 0 0,1 -6,-6 v-36 a6,6 0 0,1 6,-6 z">
             <aapt:attr name="android:fillColor">
@@ -57,8 +60,8 @@
                     android:endX="88"
                     android:endY="75"
                     android:type="linear">
-                    <item android:color="#6366F1" android:offset="0.0" />
-                    <item android:color="#4338CA" android:offset="1.0" />
+                    <item android:color="#E0E7FF" android:offset="0.0" />
+                    <item android:color="#818CF8" android:offset="1.0" />
                 </gradient>
             </aapt:attr>
         </path>

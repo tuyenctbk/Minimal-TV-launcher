@@ -1,17 +1,18 @@
-﻿"Locale","Language","App Name (max 30 chars)","Short Description (max 80 chars)","Full Description (max 4000 chars)"
-"en-US","English","Minimal TV Launcher & Control","Clean, distraction-free Android TV launcher with built-in parental controls.","Minimal TV Launcher provides a clean, distraction-free home screen experience designed specifically for Android TV and Google TV devices. Built for modern living rooms and families, it combines an intuitive, clutter-free app launcher with powerful parental control features.
+"Locale","Language","App Name (max 30 chars)","Short Description (max 80 chars)","Full Description (max 4000 chars)"
+"en-US","English","Minimal TV Launcher & Control","Clean, ad-free Android TV launcher with built-in parental controls & app guard.","Minimal TV Launcher provides a clean, distraction-free home screen experience designed specifically for Android TV and Google TV devices. Built for modern living rooms and families, it combines a fast, clutter-free app launcher with complete parental control tools.
 
 KEY FEATURES
 
-• Distraction-Free Home Screen: Focus on your favorite streaming, gaming, and educational apps without annoying ads, sponsored rows, or visual clutter.
-• Intelligent App Categorization: Easily organize your installed TV apps into Streaming, Games, Educational, Productivity, and Custom categories.
-• Daily Screen Time Limits: Set healthy daily TV time allowances for children. When time expires, a gentle full-screen lock guides kids toward off-screen activities.
-• Scheduled Bedtime Mode: Automatically lock app access during nighttime hours to encourage regular sleep routines.
-• Four-Digit Parental PIN: Secure parental dashboard, app locks, and screen time modifications behind a secure PIN code.
-• PIN Recovery Mechanism: Safely recover forgotten parental PINs via email verification.
-• Living Room Themes: Seamlessly switch between Night Cinema (Dark Theme) and Bright Living Room (Light Theme) for optimal viewing comfort.
-• Privacy and Family First: Completely offline-first architecture. No personal data collection, no behavioral tracking, and no third-party advertisements.
-• TV Remote Optimized: Fully compatible with standard D-pad directional controls and TV remote controllers.
+• Distraction-Free Home Screen: Launch your favorite streaming, gaming, and educational apps without ads, sponsored rows, or home screen clutter.
+• App Guard & Batch Restrictions: Lock or hide individual apps behind a parental PIN, or block entire categories like Games with a single click.
+• Intelligent App Categorization & Instant Search: Automatically detects newly installed TV apps and organizes them into Streaming, Games, Educational, Productivity, and Other categories with instant search.
+• Daily Screen Time Limits: Set healthy daily TV time allowances for kids with a live progress indicator, quick +15 minute parent bonus time, and a gentle full-screen lock when time expires.
+• Scheduled Bedtime Mode: Automatically locks app access during nighttime hours with a 15-minute advance reminder to encourage healthy sleep routines.
+• Four-Digit Parental PIN & Recovery: Protect settings, app locks, and screen time rules with a secure PIN and built-in email OTP recovery.
+• Activity Monitoring Dashboard: Review daily screen time usage, top launched apps, and chronological launch logs at a glance.
+• Living Room Themes: Seamlessly switch between Night Cinema (Dark Theme) and Bright Living Room (Light Theme) for any lighting condition.
+• Smooth TV Remote Experience: Fluid focus animations and 10-foot UI typography crafted specifically for standard D-pad TV remotes.
+• Privacy & Family First: 100% offline-first architecture — zero ads, zero personal data collection, and zero third-party tracking.
 
 Take back control of your living room entertainment with Minimal TV Launcher."
 "es-ES","Spanish","Minimal TV Launcher y Control","Lanzador para Android TV limpio, rápido y con control parental integrado.","Minimal TV Launcher ofrece una pantalla de inicio limpia y sin distracciones, diseñada para Android TV y Google TV. Pensado para familias, combina un lanzador intuitivo con herramientas de control parental.

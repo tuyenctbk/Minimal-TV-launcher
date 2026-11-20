@@ -1,5 +1,6 @@
 package com.example.data
 
+import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -7,6 +8,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
 
@@ -115,4 +117,22 @@ interface LauncherDao {
 @Database(entities = [ParentalSettings::class, AppRestriction::class, LaunchLog::class], version = 4, exportSchema = false)
 abstract class LauncherDatabase : RoomDatabase() {
     abstract fun launcherDao(): LauncherDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: LauncherDatabase? = null
+
+        fun getInstance(context: Context): LauncherDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    LauncherDatabase::class.java,
+                    "tv_launcher_parental_db"
+                )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    .build()
+                    .also { INSTANCE = it }
+            }
+        }
+    }
 }
