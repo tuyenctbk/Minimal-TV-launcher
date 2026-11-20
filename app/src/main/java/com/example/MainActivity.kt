@@ -58,9 +58,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.data.LauncherDatabase
 import com.example.data.LauncherRepository
+import com.example.ui.FullscreenLockOverlay
 import com.example.ui.LauncherHomeScreen
 import com.example.ui.LauncherUiState
 import com.example.ui.LauncherViewModel
+import com.example.ui.LockReason
 import com.example.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
 
@@ -128,10 +130,19 @@ class MainActivity : ComponentActivity() {
                     contentWindowInsets = WindowInsets.safeDrawing
                 ) { innerPadding ->
                     Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                        LauncherHomeScreen(viewModel = viewModel)
+                        val testLockReason = intent?.getStringExtra("TEST_LOCK_REASON")
+                        if (testLockReason != null) {
+                            val reason = try { LockReason.valueOf(testLockReason) } catch (e: Exception) { LockReason.SCREENTIME }
+                            FullscreenLockOverlay(
+                                reason = reason,
+                                onBypassClicked = {}
+                            )
+                        } else {
+                            LauncherHomeScreen(viewModel = viewModel)
+                        }
 
                         AnimatedVisibility(
-                            visible = showBrandSplash,
+                            visible = showBrandSplash && testLockReason == null,
                             exit = fadeOut(animationSpec = tween(durationMillis = 360, easing = FastOutSlowInEasing))
                         ) {
                             BrandedSplashOverlay()
@@ -214,14 +225,24 @@ private fun BrandedSplashOverlay() {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_launcher),
-                    contentDescription = stringResource(R.string.app_name),
+                Box(
                     modifier = Modifier
                         .size(88.dp)
                         .clip(CircleShape)
-                        .border(2.dp, Color(0x66818CF8), CircleShape)
-                )
+                        .border(2.dp, Color(0x66818CF8), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = stringResource(R.string.app_name),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             Row(

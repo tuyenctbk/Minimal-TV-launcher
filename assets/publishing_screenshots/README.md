@@ -1,6 +1,6 @@
 # Google Play Store Publishing Materials
 
-This directory contains the production TV screenshots (1280x720 / 16:9 TV standard) captured directly from the Android TV environment (`Television_720p`) for Google Play Store listing.
+This directory contains the production Android TV screenshots (1920x1080 / 16:9 Full HD TV standard, 320 dpi xhdpi) captured directly from the live Android TV emulator environment (`Television_1080p`) for Google Play Store listing.
 
 ## Screenshots Overview & Store Listing Mapping
 
@@ -18,5 +18,6 @@ This directory contains the production TV screenshots (1280x720 / 16:9 TV standa
 
 ## Technical Verification
 - **Target Form Factor**: Android TV (Leanback / D-Pad navigation compliant)
-- **Resolution**: 1280x720 (16:9 standard TV aspect ratio)
+- **Resolution**: 1920x1080 (16:9 Full HD standard TV aspect ratio)
+- **DPI**: 320 dpi (xhdpi 1080P)
 - **Release Signing**: Configured with v2 signature verification via `common_release_key.jks` & `local.properties`.
